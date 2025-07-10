@@ -24,6 +24,13 @@ if uploaded_pdf:
         with open(pdf_path, "wb") as f:
             f.write(uploaded_pdf.read())
 
+        from pdf2image import convert_from_bytes
+
+        # Read uploaded file directly
+        pdf_bytes = uploaded_pdf.read()
+
+        
+
         # Convert PDF to image pages
         pages = convert_from_bytes(uploaded_pdf.read(), dpi=300)
 

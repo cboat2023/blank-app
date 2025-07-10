@@ -25,7 +25,8 @@ if uploaded_pdf:
             f.write(uploaded_pdf.read())
 
         # Convert PDF to image pages
-        pages = convert_from_path(pdf_path, dpi=300)
+        pages = convert_from_bytes(uploaded_pdf.read(), dpi=300)
+
 
         # Initialize Vision API client
         client = vision.ImageAnnotatorClient()

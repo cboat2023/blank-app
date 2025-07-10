@@ -1,11 +1,17 @@
-import json
-import streamlit as st
-from google.oauth2 import service_account
 from google.cloud import vision
+from google.oauth2 import service_account
+import streamlit as st
+import json
+import io
+from pdf2image import convert_from_bytes
+from PIL import Image
 
-
+# --- Load credentials from Streamlit secrets ---
 creds_dict = json.loads(st.secrets["GCP"]["gcp_credentials"])
 credentials = service_account.Credentials.from_service_account_info(creds_dict)
+
+# --- Initialize Vision client with credentials ---
+client = vision.ImageAnnotatorClient(credentials=credentials)
 
 
 # --- Streamlit UI ---

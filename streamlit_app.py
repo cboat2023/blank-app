@@ -4,8 +4,13 @@ import os
 from google.cloud import vision
 from pdf2image import convert_from_bytes
 
-# --- Authenticate with GCP ---
-os.environ["GOOGLE_APPLICATION_CREDENTIALS"] = "analog-height-465315-p7-3b93a3344a21.json"  # Upload this file to Streamlit Cloud separately
+import json
+import streamlit as st
+from google.oauth2 import service_account
+
+creds_dict = json.loads(st.secrets["GCP"]["gcp_credentials"])
+credentials = service_account.Credentials.from_service_account_info(creds_dict)
+
 
 # --- Streamlit UI ---
 st.title("📊 CIM OCR to Financials Extractor")

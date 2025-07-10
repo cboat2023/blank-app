@@ -14,28 +14,39 @@ credentials = service_account.Credentials.from_service_account_info(creds_dict)
 client = vision.ImageAnnotatorClient(credentials=credentials)
 
 # --- Streamlit UI ---
-st.title("📊 CIM OCR to Financials Extractor")
+st.title("CIM OCR Extractor")
+uploaded_pdf = st.file_uploader("Upload CIM PDF", type=["pdf"])
 
-uploaded_files = st.file_uploader("Upload screenshots or PDF (up to 5)", type=["png", "jpg", "jpeg", "pdf"], accept_multiple_files=True)
+if uploaded_pdf:
+    with st.spinner("Converting PDF to images..."):
+        # Save the uploaded PDF temporarily
+        pdf_path = "temp_uploaded.pdf"
+        with open(pdf_path, "wb") as f:
+            f.write(uploaded_pdf.read())
 
-if uploaded_files:
-    full_text = ""
+        # Convert PDF to image pages
+        pages = convert_from_path(pdf_path, dpi=300)
 
-    for uploaded_file in uploaded_files:
-        filename = uploaded_file.name
-        st.write(f"📄 Processing: {filename}")
+        # Initialize Vision API client
+        client = vision.ImageAnnotatorClient()
 
-        if filename.endswith(".pdf"):
-            pages = convert_from_bytes(uploaded_file.read())
-            for i, page in enumerate(pages):
-                buf = io.BytesIO()
-                page.save(buf, format="PNG")
-                image = vision.Image(content=buf.getvalue())
-                response = client.document_text_detection(image=image)
-                full_text += response.full_text_annotation.text + "\n"
-        else:
-            image = vision.Image(content=uploaded_file.read())
+        combined_text = ""
+        for i, page in enumerate(pages):
+            st.text(f"OCRing page {i+1} of {len(pages)}")
+            img_byte_arr = io.BytesIO()
+            page.save(img_byte_arr, format='PNG')
+            image = vision.Image(content=img_byte_arr.getvalue())
             response = client.document_text_detection(image=image)
-            full_text += response.full_text_annotation.text + "\n"
 
-    st.text_area("📝 Extracted OCR Text", full_text, height=300)
+            if response.error.message:
+                st.warning(f"Error on page {i+1}: {response.error.message}")
+            else:
+                combined_text += response.full_text_annotation.text + "\n"
+
+        # Save OCR output
+        output_path = "ocr_combined.txt"
+        with open(output_path, "w") as f:
+            f.write(combined_text)
+
+        st.success("✅ OCR complete.")
+        st.download_button("Download OCR Text", combined_text, file_name="ocr_combined.txt", mime="text/plain")

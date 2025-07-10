@@ -13,14 +13,12 @@ credentials = service_account.Credentials.from_service_account_info(creds_dict)
 # --- Initialize Vision client with credentials ---
 client = vision.ImageAnnotatorClient(credentials=credentials)
 
-
 # --- Streamlit UI ---
 st.title("📊 CIM OCR to Financials Extractor")
 
 uploaded_files = st.file_uploader("Upload screenshots or PDF (up to 5)", type=["png", "jpg", "jpeg", "pdf"], accept_multiple_files=True)
 
 if uploaded_files:
-    client = vision.ImageAnnotatorClient()
     full_text = ""
 
     for uploaded_file in uploaded_files:

@@ -4,7 +4,8 @@ import io
 import fitz  # PyMuPDF
 from google.cloud import vision
 from google.oauth2 import service_account
-from openai import OpenAI
+import openai
+
 
 # --- GCP Credentials from secrets ---
 creds_dict = json.loads(st.secrets["GCP"]["gcp_credentials"])

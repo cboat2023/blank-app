@@ -15,7 +15,7 @@ credentials = service_account.Credentials.from_service_account_info(creds_dict)
 client = vision.ImageAnnotatorClient(credentials=credentials)
 
 # --- OpenAI credentials ---
-openai_api_key = st.secrets["OPENAI_API_KEY"]
+openai_api_key = st.secrets["OPENAI"]["OPENAI_API_KEY"]
 openai.api_key = openai_api_key
 
 

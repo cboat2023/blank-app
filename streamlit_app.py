@@ -8,6 +8,7 @@ import openai
 import pandas as pd
 import openpyxl
 from io import BytesIO
+import re
 
 # --- GCP Credentials from secrets ---
 creds_dict = json.loads(st.secrets["GCP"]["gcp_credentials"])
@@ -103,13 +104,23 @@ Text to analyze:
     st.subheader("📥 Extracted Financial Metrics (JSON)")
     st.code(response_text, language="json")
 
-    # Parse GPT output
-    try:
-        data = json.loads(response_text)
-    except Exception as e:
-        st.error("❌ Failed to parse GPT response as JSON")
-        st.stop()
+   
+# --- Parse GPT output ---
+cleaned_json_text = response_text
 
+if "```json" in cleaned_json_text:
+    match = re.search(r"```json(.*?)```", cleaned_json_text, re.DOTALL)
+    if match:
+        cleaned_json_text = match.group(1).strip()
+else:
+    cleaned_json_text = cleaned_json_text.strip()
+
+try:
+    data = json.loads(cleaned_json_text)
+except Exception as e:
+    st.error(f"❌ Failed to parse GPT response as JSON:\n{e}")
+    st.stop()
+    
     # --- Excel cell mapping ---
     mapping = {
         ("Revenue_Actual_1",): ("Model", "E20"),

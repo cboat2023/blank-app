@@ -230,50 +230,50 @@ Text to analyze:
 
         # Excel cell mapping
       mapping = {
-    # P&L Table (Historical): E-G columns
-    ("Revenue_Actual_1",): ("Model", "E20"),    # Oldest actual (e.g., 2022A)
-    ("Revenue_Actual_2",): ("Model", "F20"),    # Middle actual (e.g., 2023A)
-    ("Revenue_Actual_3",): ("Model", "G20"),    # Most recent actual (e.g., 2024A)
-
-    ("EBITDA_Actual_1",): ("Model", "E28"),
-    ("EBITDA_Actual_2",): ("Model", "F28"),
-    ("EBITDA_Actual_3",): ("Model", "G28"),
-
-    # Management Projection Table: 2 actuals + expected + projections
-    ("Revenue_Actual_2",): ("Model", "AA20"),   # 2nd most recent actual (e.g., 2023A)
-    ("Revenue_Actual_3",): ("Model", "AB20"),   # Most recent actual (e.g., 2024A)
-    ("Revenue_Expected",): ("Model", "AC20"),   # Expected year (e.g., 2025E)
-    ("Revenue_Proj_Y1",): ("Model", "AD20"),
-    ("Revenue_Proj_Y2",): ("Model", "AE20"),
-    ("Revenue_Proj_Y3",): ("Model", "AF20"),
-    ("Revenue_Proj_Y4",): ("Model", "AG20"),
-    ("Revenue_Proj_Y5",): ("Model", "AH20"),
-
-    ("EBITDA_Actual_2",): ("Model", "AA28"),
-    ("EBITDA_Actual_3",): ("Model", "AB28"),
-    ("EBITDA_Expected",): ("Model", "AC28"),
-    ("EBITDA_Proj_Y1",): ("Model", "AD28"),
-    ("EBITDA_Proj_Y2",): ("Model", "AE28"),
-    ("EBITDA_Proj_Y3",): ("Model", "AF28"),
-    ("EBITDA_Proj_Y4",): ("Model", "AG28"),
-    ("EBITDA_Proj_Y5",): ("Model", "AH28"),
-
-    # Maintenance CapEx in projection table
-    ("CapEx_Maint_Actual_2",): ("Model", "AA52"),
-    ("CapEx_Maint_Actual_3",): ("Model", "AB52"),
-    ("CapEx_Maint_Expected",): ("Model", "AC52"),
-    ("CapEx_Maint_Proj_Y1",): ("Model", "AD52"),
-    ("CapEx_Maint_Proj_Y2",): ("Model", "AE52"),
-    ("CapEx_Maint_Proj_Y3",): ("Model", "AF52"),
-    ("CapEx_Maint_Proj_Y4",): ("Model", "AG52"),
-    ("CapEx_Maint_Proj_Y5",): ("Model", "AH52"),
-
-    # Acquisition counts (projections only)
-    ("Num_Acq_Proj_Y1",): ("Acquisitions", "N13"),
-    ("Num_Acq_Proj_Y2",): ("Acquisitions", "O13"),
-    ("Num_Acq_Proj_Y3",): ("Acquisitions", "P13"),
-    ("Num_Acq_Proj_Y4",): ("Acquisitions", "Q13"),
-    ("Num_Acq_Proj_Y5",): ("Acquisitions", "R13"),
+        # P&L Table (Historical): E-G columns
+        ("Revenue_Actual_1",): ("Model", "E20"),    # Oldest actual (e.g., 2022A)
+        ("Revenue_Actual_2",): ("Model", "F20"),    # Middle actual (e.g., 2023A)
+        ("Revenue_Actual_3",): ("Model", "G20"),    # Most recent actual (e.g., 2024A)
+    
+        ("EBITDA_Actual_1",): ("Model", "E28"),
+        ("EBITDA_Actual_2",): ("Model", "F28"),
+        ("EBITDA_Actual_3",): ("Model", "G28"),
+    
+        # Management Projection Table: 2 actuals + expected + projections
+        ("Revenue_Actual_2",): ("Model", "AA20"),   # 2nd most recent actual (e.g., 2023A)
+        ("Revenue_Actual_3",): ("Model", "AB20"),   # Most recent actual (e.g., 2024A)
+        ("Revenue_Expected",): ("Model", "AC20"),   # Expected year (e.g., 2025E)
+        ("Revenue_Proj_Y1",): ("Model", "AD20"),
+        ("Revenue_Proj_Y2",): ("Model", "AE20"),
+        ("Revenue_Proj_Y3",): ("Model", "AF20"),
+        ("Revenue_Proj_Y4",): ("Model", "AG20"),
+        ("Revenue_Proj_Y5",): ("Model", "AH20"),
+    
+        ("EBITDA_Actual_2",): ("Model", "AA28"),
+        ("EBITDA_Actual_3",): ("Model", "AB28"),
+        ("EBITDA_Expected",): ("Model", "AC28"),
+        ("EBITDA_Proj_Y1",): ("Model", "AD28"),
+        ("EBITDA_Proj_Y2",): ("Model", "AE28"),
+        ("EBITDA_Proj_Y3",): ("Model", "AF28"),
+        ("EBITDA_Proj_Y4",): ("Model", "AG28"),
+        ("EBITDA_Proj_Y5",): ("Model", "AH28"),
+    
+        # Maintenance CapEx in projection table
+        ("CapEx_Maint_Actual_2",): ("Model", "AA52"),
+        ("CapEx_Maint_Actual_3",): ("Model", "AB52"),
+        ("CapEx_Maint_Expected",): ("Model", "AC52"),
+        ("CapEx_Maint_Proj_Y1",): ("Model", "AD52"),
+        ("CapEx_Maint_Proj_Y2",): ("Model", "AE52"),
+        ("CapEx_Maint_Proj_Y3",): ("Model", "AF52"),
+        ("CapEx_Maint_Proj_Y4",): ("Model", "AG52"),
+        ("CapEx_Maint_Proj_Y5",): ("Model", "AH52"),
+    
+        # Acquisition counts (projections only)
+        ("Num_Acq_Proj_Y1",): ("Acquisitions", "N13"),
+        ("Num_Acq_Proj_Y2",): ("Acquisitions", "O13"),
+        ("Num_Acq_Proj_Y3",): ("Acquisitions", "P13"),
+        ("Num_Acq_Proj_Y4",): ("Acquisitions", "Q13"),
+        ("Num_Acq_Proj_Y5",): ("Acquisitions", "R13"),
 }
 
 

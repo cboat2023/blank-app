@@ -32,6 +32,44 @@ def pick_metric_group(field_prefix, label):
     if candidates_key in data:
         st.subheader(f"🧐 Multiple variants found for {label}")
         choices = list(data[candidates_key].keys())
+        if len(choices) == 1:
+            selected = choices[0]
+            st.info(f"✅ Only one {label} found: using \"{selected}\"")
+        else:
+            selected = st.radio(f"Choose one {label} version to use for ALL time periods:", choices, key=field_prefix)
+        selected_values = data[candidates_key][selected]
+
+        for subfield in [
+            "Actual_1", "Actual_2", "Actual_3", "Expected",
+            "Proj_Y1", "Proj_Y2", "Proj_Y3", "Proj_Y4", "Proj_Y5"
+        ]:
+            field_name = f"{field_prefix}_{subfield}"
+            if isinstance(selected_values, dict) and subfield in selected_values:
+                data[field_name] = selected_values[subfield]
+import re
+
+# --- GCP Credentials from secrets ---
+creds_dict = json.loads(st.secrets["GCP"]["gcp_credentials"])
+credentials = service_account.Credentials.from_service_account_info(creds_dict)
+client = vision.ImageAnnotatorClient(credentials=credentials)
+
+# --- OpenAI credentials ---
+openai_api_key = st.secrets["OPENAI"]["OPENAI_API_KEY"]
+openai.api_key = openai_api_key
+
+# --- Streamlit UI ---
+st.title("📊 CIM Financial Extractor (OCR + AI)")
+uploaded_pdf = st.file_uploader("📁 Upload CIM PDF", type=["pdf"])
+
+def pick_metric_group(field_prefix, label):
+    """
+    If *_Candidates exists (e.g., EBITDA_Candidates), ask user to pick a single variant,
+    then apply that value to all matching keys like EBITDA_Actual_1, _2, Expected, Proj_Y1–5.
+    """
+    candidates_key = f"{field_prefix}_Candidates"
+    if candidates_key in data:
+        st.subheader(f"🧐 Multiple variants found for {label}")
+        choices = list(data[candidates_key].keys())
         selected = st.radio(f"Choose one {label} version to use for ALL time periods:", choices, key=field_prefix)
         if len(choices) == 1:
             selected = choices[0]
@@ -81,11 +119,11 @@ Your task is to extract the following **hardcoded** financials (not calculated, 
    - Five projected years (e.g., 2026E to 2030E)
 
 2. **EBITDA** (prefer Adjusted or RR Adj.)
-   - Same format: 2 recent actuals, 1 expected, 5 projected
+   - Same format: 3 recent actuals, 1 expected, 5 projected
 
 3. **Maintenance CapEx**
    - Prefer labeled “Maintenance CapEx” (not total CapEx)
-   - Same format: 2 actual, 1 expected, 5 projected
+   - Same format: 3 actual, 1 expected, 5 projected
 
 4. **Acquisition Count**
    - Count of planned acquisitions per projected year
@@ -225,61 +263,39 @@ Text to analyze:
         pick_metric_group("CapEx_Maint", "Maintenance CapEx")
         pick_metric_group("Num_Acq_Proj", "Acquisition Count")
 
-        if st.button("✅ Continue to Export LBO Excel"):
-            # Excel cell mapping logic here
-            mapping = {
-                ("Revenue_Actual_1",): ("Model", "E20"),
-                ...
-                ("Num_Acq_Proj_Y5",): ("Acquisitions", "R13"),
-            }
-
-    template_path = "TJC Practice Simple Model New (7).xlsx"
-    wb = openpyxl.load_workbook(template_path)
-
-    for key, (sheet_name, cell) in mapping.items():
-        metric = key[0]
-        if metric in data:
-            try:
-                wb[sheet_name][cell] = data[metric]
-            except Exception as e:
-                st.warning(f"⚠️ Failed to write {metric} → {sheet_name}!{cell}: {e}")
-
-    output = BytesIO()
-    wb.save(output)
-    output.seek(0)
-
-    st.download_button(
-        label="📅 Download Updated LBO Excel",
-        data=output,
-        file_name="updated_lbo_model.xlsx",
-        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-    )
-
-
         # Excel cell mapping
         mapping = {
-            ("Revenue_Actual_1",): ("Model", "E20"),
-            ("Revenue_Actual_2",): ("Model", "F20"),
-            ("Revenue_Expected",): ("Model", "G20"),
+            # P&L Table (Historical + Expected): E-G columns
+            ("Revenue_Actual_1",): ("Model", "E20"),    # Oldest actual (e.g., 2022A)
+            ("Revenue_Actual_2",): ("Model", "F20"),    # Middle actual (e.g., 2023A) 
+            ("Revenue_Expected",): ("Model", "G20"),    # Expected/Budget year (e.g., 2025E)
 
             ("EBITDA_Actual_1",): ("Model", "E28"),
-            ("EBITDA_Actual_2",): ("Model", "F28"),
+            ("EBITDA_Actual_2",): ("Model", "F28"), 
             ("EBITDA_Expected",): ("Model", "G28"),
 
-            ("Revenue_Proj_Y1",): ("Model", "AC20"),
-            ("Revenue_Proj_Y2",): ("Model", "AD20"),
-            ("Revenue_Proj_Y3",): ("Model", "AE20"),
-            ("Revenue_Proj_Y4",): ("Model", "AF20"),
-            ("Revenue_Proj_Y5",): ("Model", "AG20"),
+            # Management Projection Table: Start with 2 most recent historicals, then projections
+            ("Revenue_Actual_2",): ("Model", "AA20"),   # Same as F20 (e.g., 2023A)
+            ("Revenue_Actual_3",): ("Model", "AB20"),   # Most recent actual (e.g., 2024A)
+            ("Revenue_Expected",): ("Model", "AC20"),   # Same as G20 (Expected/Budget year)
+            ("Revenue_Proj_Y1",): ("Model", "AD20"),
+            ("Revenue_Proj_Y2",): ("Model", "AE20"),
+            ("Revenue_Proj_Y3",): ("Model", "AF20"),
+            ("Revenue_Proj_Y4",): ("Model", "AG20"),
+            ("Revenue_Proj_Y5",): ("Model", "AH20"),
 
-            ("EBITDA_Proj_Y1",): ("Model", "AC28"),
-            ("EBITDA_Proj_Y2",): ("Model", "AD28"),
-            ("EBITDA_Proj_Y3",): ("Model", "AE28"),
-            ("EBITDA_Proj_Y4",): ("Model", "AF28"),
-            ("EBITDA_Proj_Y5",): ("Model", "AG28"),
+            ("EBITDA_Actual_2",): ("Model", "AA28"),    # Same as F28
+            ("EBITDA_Actual_3",): ("Model", "AB28"),    # Most recent actual
+            ("EBITDA_Expected",): ("Model", "AC28"),    # Same as G28 (Expected/Budget year)
+            ("EBITDA_Proj_Y1",): ("Model", "AD28"),
+            ("EBITDA_Proj_Y2",): ("Model", "AE28"),
+            ("EBITDA_Proj_Y3",): ("Model", "AF28"),
+            ("EBITDA_Proj_Y4",): ("Model", "AG28"),
+            ("EBITDA_Proj_Y5",): ("Model", "AH28"),
 
-            ("CapEx_Maint_Actual_1",): ("Model", "AA52"),
-            ("CapEx_Maint_Actual_2",): ("Model", "AB52"),
+            # Maintenance CapEx in projection table
+            ("CapEx_Maint_Actual_2",): ("Model", "AA52"),  # Second most recent historical
+            ("CapEx_Maint_Actual_3",): ("Model", "AB52"),  # Most recent historical
             ("CapEx_Maint_Expected",): ("Model", "AC52"),
             ("CapEx_Maint_Proj_Y1",): ("Model", "AD52"),
             ("CapEx_Maint_Proj_Y2",): ("Model", "AE52"),
@@ -287,6 +303,7 @@ Text to analyze:
             ("CapEx_Maint_Proj_Y4",): ("Model", "AG52"),
             ("CapEx_Maint_Proj_Y5",): ("Model", "AH52"),
 
+            # Acquisition counts (projections only)
             ("Num_Acq_Proj_Y1",): ("Acquisitions", "N13"),
             ("Num_Acq_Proj_Y2",): ("Acquisitions", "O13"),
             ("Num_Acq_Proj_Y3",): ("Acquisitions", "P13"),
@@ -315,5 +332,6 @@ Text to analyze:
             file_name="updated_lbo_model.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
+
 
 

@@ -88,43 +88,120 @@ Your task is to extract the following **hardcoded** financials (not calculated, 
    - If none are explicitly listed, say \"assumed\": 1 for each year
 
 ### Candidate Handling Instructions:
-If **multiple values** are found for any metric (e.g., both "Adj. EBITDA" and "Reported EBITDA"), return all values in a `*_Candidates` field, like this:
+If **multiple values** are found for any metric (e.g., both "Adj. EBITDA" and "Reported EBITDA"), return all values in a `*_Candidates` field.
 
-```json
-"EBITDA_Candidates": {{
-  "Adj. EBITDA": {{"EBITDA_Actual_1": ..., "EBITDA_Proj_Y5": ...}},
-  "Reported EBITDA": {{"EBITDA_Actual_1": ..., "EBITDA_Proj_Y5": ...}}
+### Expected JSON Format (example):
+{{
+  "Revenue_Actual_1": 100.5,
+  "Revenue_Actual_2": 110.2,
+  "Revenue_Expected": 120.0,
+  "Revenue_Proj_Y1": 130.0,
+  "Revenue_Proj_Y2": 140.0,
+  "Revenue_Proj_Y3": 150.0,
+  "Revenue_Proj_Y4": 160.0,
+  "Revenue_Proj_Y5": 170.0,
+  "EBITDA_Actual_1": 20.1,
+  "EBITDA_Actual_2": 22.0,
+  "EBITDA_Expected": 24.0,
+  "EBITDA_Proj_Y1": 26.0,
+  "EBITDA_Proj_Y2": 28.0,
+  "EBITDA_Proj_Y3": 30.0,
+  "EBITDA_Proj_Y4": 32.0,
+  "EBITDA_Proj_Y5": 34.0
 }}
+
+IMPORTANT: You MUST respond with ONLY valid JSON. Do not include any explanatory text, markdown formatting, or code blocks. Start directly with the opening curly brace and end with the closing curly brace.
+
+If no financial data is found, return: {{"error": "No financial data found"}}
 
 Text to analyze:
 {combined_text}
 """
 
-        response = openai.chat.completions.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": ai_prompt}
-            ],
-            temperature=0,
-        )
-
-        response_text = response.choices[0].message.content.strip()
-        st.subheader("📅 Extracted Financial Metrics (JSON)")
-        st.code(response_text, language="json")
-
-        cleaned_json_text = response_text
-        if "```json" in cleaned_json_text:
-            match = re.search(r"```json(.*?)```", cleaned_json_text, re.DOTALL)
-            if match:
-                cleaned_json_text = match.group(1).strip()
-        else:
-            cleaned_json_text = cleaned_json_text.strip()
-
         try:
-            data = json.loads(cleaned_json_text)
+            response = openai.chat.completions.create(
+                model="gpt-4",
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant that ALWAYS responds with valid JSON."},
+                    {"role": "user", "content": ai_prompt}
+                ],
+                temperature=0,
+            )
+
+            # Check if response exists and has content
+            if not response or not response.choices or not response.choices[0].message.content:
+                st.error("❌ Empty response from OpenAI API")
+                st.stop()
+
+            response_text = response.choices[0].message.content.strip()
+            
+            # Check if response is empty
+            if not response_text:
+                st.error("❌ Empty response content from OpenAI API")
+                st.stop()
+
+            st.subheader("📅 Raw GPT Response")
+            st.code(response_text, language="text")
+
+            # Clean JSON extraction
+            cleaned_json_text = response_text
+            if "```json" in cleaned_json_text:
+                match = re.search(r"```json(.*?)```", cleaned_json_text, re.DOTALL)
+                if match:
+                    cleaned_json_text = match.group(1).strip()
+                else:
+                    st.error("❌ Found ```json marker but couldn't extract JSON content")
+                    st.stop()
+            elif "```" in cleaned_json_text:
+                # Handle case where there's ``` but no json marker
+                match = re.search(r"```(.*?)```", cleaned_json_text, re.DOTALL)
+                if match:
+                    cleaned_json_text = match.group(1).strip()
+            else:
+                cleaned_json_text = cleaned_json_text.strip()
+
+            # Additional check for empty cleaned text
+            if not cleaned_json_text:
+                st.error("❌ No JSON content found in GPT response")
+                st.stop()
+
+            st.subheader("📅 Extracted JSON")
+            st.code(cleaned_json_text, language="json")
+
+            # Parse JSON with better error handling
+            try:
+                data = json.loads(cleaned_json_text)
+                
+                # Validate that we got a dictionary
+                if not isinstance(data, dict):
+                    st.error("❌ GPT response is not a valid JSON object")
+                    st.error(f"Got type: {type(data)}")
+                    st.stop()
+                    
+                # Check if we got any meaningful data
+                if not data:
+                    st.warning("⚠️ GPT returned empty JSON object. This might indicate no financial data was found in the document.")
+                    st.info("💡 Try uploading a different CIM document or check if the document contains clear financial tables.")
+                    data = {}  # Initialize empty dict to prevent errors below
+                    
+            except json.JSONDecodeError as e:
+                st.error(f"❌ Failed to parse as JSON: {e}")
+                st.error(f"Raw content to parse: {repr(cleaned_json_text[:500])}")
+                
+                # Show the user what we actually received
+                st.subheader("🔍 Debug Information")
+                st.text("Full response text:")
+                st.code(response_text, language="text")
+                st.text("Cleaned JSON text:")
+                st.code(cleaned_json_text, language="text")
+                st.stop()
+                
+            except Exception as e:
+                st.error(f"❌ Unexpected error parsing JSON: {e}")
+                st.stop()
+
         except Exception as e:
-            st.error(f"❌ Failed to parse GPT response as JSON:\n{e}")
+            st.error(f"❌ Error calling OpenAI API: {e}")
             st.stop()
 
         # Allow user to pick consistent metric types

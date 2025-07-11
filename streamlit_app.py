@@ -94,7 +94,6 @@ Text to analyze:
     # --- AI Financial Extraction ---
     with st.spinner("🔍 Extracting financial metrics with GPT-4..."):
 
-        ai_prompt = f"""...your full prompt here..."""
 
         response = openai_client.chat.completions.create(
             model="gpt-4",

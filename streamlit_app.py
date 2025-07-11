@@ -51,7 +51,7 @@ You are analyzing OCR output from a Confidential Information Memorandum (CIM) fo
 Your job is to extract the following **hardcoded** financials (not calculated, not inferred):
 
 1. Revenue
-   - Two most recent actual years (look for historicals in descending order)
+   - Two most recent actual years (look for historicals in descending order ex: if 2022A,2023A,2024A take only 2023A and 2024A)
    - One expected or budget year (usually the current year or labeled "Budget" / "Expected")
    - Five projected years (clearly labeled as "Projected", "Forecast", or future years beyond expected)
 

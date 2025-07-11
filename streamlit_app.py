@@ -41,9 +41,10 @@ if uploaded_pdf:
 
     st.success("✅ OCR complete!")
 
-    # --- AI Financial Extraction ---
+   # --- AI Financial Extraction ---
+with st.spinner("🔍 Extracting financial metrics with GPT-4..."):
 
-        ai_prompt = f"""
+    ai_prompt = f"""
 You are analyzing OCR output from a Confidential Information Memorandum (CIM) for an LBO model.
 
 Your job is to extract the following **hardcoded** financials (not calculated, not inferred):
@@ -90,20 +91,17 @@ Return your answer in valid JSON using this structure:
 Text to analyze:
 {combined_text}
 """
-    # --- AI Financial Extraction ---
-    with st.spinner("🔍 Extracting financial metrics with GPT-4..."):
 
+    response = openai_client.chat.completions.create(
+        model="gpt-4",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant."},
+            {"role": "user", "content": ai_prompt}
+        ],
+        temperature=0,
+    )
 
-        response = openai_client.chat.completions.create(
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": ai_prompt}
-            ],
-            temperature=0,
-        )
+    response_text = response.choices[0].message.content.strip()
 
-        response_text = response.choices[0].message.content.strip()
-
-        st.subheader("📥 Extracted Financial Metrics (JSON)")
-        st.code(response_text, language="json")
+    st.subheader("📥 Extracted Financial Metrics (JSON)")
+    st.code(response_text, language="json")

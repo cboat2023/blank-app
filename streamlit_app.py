@@ -258,8 +258,6 @@ Text to analyze:
     ("EBITDA_Actual_3",): ("Model", "G28"),
 
     # Management Projection Table: 2 actuals + expected + projections
-    ("Revenue_Actual_2",): ("Model", "AA20"),   # 2nd most recent actual (e.g., 2023A)
-    ("Revenue_Actual_3",): ("Model", "AB20"),   # Most recent actual (e.g., 2024A)
     ("Revenue_Expected",): ("Model", "AC20"),   # Expected year (e.g., 2025E)
     ("Revenue_Proj_Y1",): ("Model", "AD20"),
     ("Revenue_Proj_Y2",): ("Model", "AE20"),
@@ -267,8 +265,6 @@ Text to analyze:
     ("Revenue_Proj_Y4",): ("Model", "AG20"),
     ("Revenue_Proj_Y5",): ("Model", "AH20"),
 
-    ("EBITDA_Actual_2",): ("Model", "AA28"),
-    ("EBITDA_Actual_3",): ("Model", "AB28"),
     ("EBITDA_Expected",): ("Model", "AC28"),
     ("EBITDA_Proj_Y1",): ("Model", "AD28"),
     ("EBITDA_Proj_Y2",): ("Model", "AE28"),

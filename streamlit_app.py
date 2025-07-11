@@ -25,20 +25,19 @@ st.title("📊 CIM Financial Extractor (OCR + AI)")
 uploaded_pdf = st.file_uploader("📁 Upload CIM PDF", type=["pdf"])
 
 def preclean_combined_text(raw_text):
-    # Remove hanging headers like "Joan Comp" and "OVERVIEW"
-    text = re.sub(r"\b(Joan Comp|OVERVIEW|onential - Not For Distribution)\b", "", raw_text)
+    # Step 1: Join broken label lines
+    text = join_wrapped_labels(raw_text)
 
-    # Collapse multiple dollar signs next to each other into a single row
-    text = re.sub(r"\$\s+", "$", text)
-    text = re.sub(r"\s{2,}", " ", text)  # Collapse big spaces
+    # Step 2: Add line breaks before each $number
+    text = re.sub(r"(?<=\d)\s*(?=\$\d)", "\n", text)
 
-    # Ensure "4-Wall EBITDA" and its variants are properly joined with numbers
-    text = re.sub(r"(?<=\b4-Wall EBITDA)\s*\n", " ", text)
-    text = re.sub(r"(?<=Adj\. 4-Wall RR EBITDA)\s*\n", " ", text)
-    text = re.sub(r"(?<=Total RR Adj\. EBITDA \(2-Year\))\s*\n", " ", text)
+    # Step 3: Remove known junk headers
+    text = re.sub(r"\b(Joan Comp|OVERVIEW|onential - Not For Distribution|6\.|FINANCIAL)\b", "", text)
+
+    # Step 4: Normalize extra spacing
+    text = re.sub(r"\s{2,}", " ", text)
 
     return text
-
 
 def pick_metric_group(field_prefix, label):
     """

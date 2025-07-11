@@ -21,6 +21,7 @@ uploaded_pdf = st.file_uploader("📁 Upload CIM PDF", type=["pdf"])
 
 if uploaded_pdf:
     with st.spinner("🧠 OCRing the CIM..."):
+        # Read and convert PDF
         pdf_bytes = uploaded_pdf.read()
         pdf_doc = fitz.open(stream=pdf_bytes, filetype="pdf")
 
@@ -104,4 +105,3 @@ Text to analyze:
 
         st.subheader("📥 Extracted Financial Metrics (JSON)")
         st.code(response_text, language="json")
-

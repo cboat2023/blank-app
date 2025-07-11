@@ -158,7 +158,7 @@ mapping = {
 }
 
 # === Load template Excel workbook ===
-template_path = "lbo_template.xlsx"  # Must be uploaded to repo
+template_path = "TJC Practice Simple Model New (7).xlsx"  # Must be uploaded to repo
 wb = openpyxl.load_workbook(template_path)
 
 # === Fill in the mapped values ===

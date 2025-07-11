@@ -4,7 +4,9 @@ import io
 import fitz  # PyMuPDF
 from google.cloud import vision
 from google.oauth2 import service_account
-import openai
+from openai import openai
+
+
 
 
 # --- GCP Credentials from secrets ---
@@ -14,7 +16,9 @@ client = vision.ImageAnnotatorClient(credentials=credentials)
 
 # --- OpenAI credentials ---
 openai_api_key = st.secrets["OPENAI_API_KEY"]
-openai_client = OpenAI(api_key=openai_api_key)
+openai.api_key = openai_api_key
+
+
 
 # --- Streamlit UI ---
 st.title("📊 CIM Financial Extractor (OCR + AI)")
@@ -93,7 +97,7 @@ Text to analyze:
 {combined_text}
 """
 
-        response = openai_client.chat.completions.create(
+        response = openai.ChatCompletion.create (
             model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant."},

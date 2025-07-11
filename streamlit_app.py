@@ -222,6 +222,24 @@ Text to analyze:
             st.error(f"❌ Error calling OpenAI API: {e}")
             st.stop()
 
+        # Flatten nested financials
+        for field_prefix in ["Revenue", "Maintenance_CapEx", "Acquisition_Count"]:
+            if field_prefix in data and isinstance(data[field_prefix], dict):
+                for k, v in data[field_prefix].items():
+                    data[f"{field_prefix}_{k}"] = v
+        
+        # Rename keys to match Excel mapping
+        for old_prefix, new_prefix in [
+            ("Maintenance_CapEx", "CapEx_Maint"),
+            ("Acquisition_Count", "Num_Acq")
+        ]:
+            for suffix in ["Actual_1", "Actual_2", "Actual_3", "Expected", "Proj_Y1", "Proj_Y2", "Proj_Y3", "Proj_Y4", "Proj_Y5"]:
+                old_key = f"{old_prefix}_{suffix}"
+                new_key = f"{new_prefix}_{suffix}"
+                if old_key in data:
+                    data[new_key] = data[old_key]
+
+
         # Allow user to pick consistent metric types
         pick_metric_group("EBITDA", "EBITDA")
         pick_metric_group("Revenue", "Revenue")

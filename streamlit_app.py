@@ -97,14 +97,15 @@ Text to analyze:
 {combined_text}
 """
 
-        response = openai.ChatCompletion.create (
-            model="gpt-4",
-            messages=[
-                {"role": "system", "content": "You are a helpful assistant."},
-                {"role": "user", "content": ai_prompt}
-            ],
-            temperature=0,
-        )
+        response = openai.chat.completions.create(
+    model="gpt-4",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": ai_prompt}
+    ],
+    temperature=0,
+)
+
 
         response_text = response.choices[0].message.content.strip()
 

@@ -21,7 +21,6 @@ uploaded_pdf = st.file_uploader("📁 Upload CIM PDF", type=["pdf"])
 
 if uploaded_pdf:
     with st.spinner("🧠 OCRing the CIM..."):
-        # Read and convert PDF
         pdf_bytes = uploaded_pdf.read()
         pdf_doc = fitz.open(stream=pdf_bytes, filetype="pdf")
 
@@ -41,10 +40,10 @@ if uploaded_pdf:
 
     st.success("✅ OCR complete!")
 
-   # --- AI Financial Extraction ---
-with st.spinner("🔍 Extracting financial metrics with GPT-4..."):
+    # --- AI Financial Extraction ---
+    with st.spinner("🔍 Extracting financial metrics with GPT-4..."):
 
-    ai_prompt = f"""
+        ai_prompt = f"""
 You are analyzing OCR output from a Confidential Information Memorandum (CIM) for an LBO model.
 
 Your job is to extract the following **hardcoded** financials (not calculated, not inferred):
@@ -92,16 +91,17 @@ Text to analyze:
 {combined_text}
 """
 
-    response = openai_client.chat.completions.create(
-        model="gpt-4",
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant."},
-            {"role": "user", "content": ai_prompt}
-        ],
-        temperature=0,
-    )
+        response = openai_client.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": ai_prompt}
+            ],
+            temperature=0,
+        )
 
-    response_text = response.choices[0].message.content.strip()
+        response_text = response.choices[0].message.content.strip()
 
-    st.subheader("📥 Extracted Financial Metrics (JSON)")
-    st.code(response_text, language="json")
+        st.subheader("📥 Extracted Financial Metrics (JSON)")
+        st.code(response_text, language="json")
+

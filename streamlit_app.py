@@ -23,6 +23,26 @@ openai.api_key = openai_api_key
 st.title("📊 CIM Financial Extractor (OCR + AI)")
 uploaded_pdf = st.file_uploader("📁 Upload CIM PDF", type=["pdf"])
 
+def pick_metric_group(field_prefix, label):
+    """
+    If *_Candidates exists (e.g., EBITDA_Candidates), ask user to pick a single variant,
+    then apply that value to all matching keys like EBITDA_Actual_1, _2, Expected, Proj_Y1–5.
+    """
+    candidates_key = f"{field_prefix}_Candidates"
+    if candidates_key in data:
+        st.subheader(f"🧐 Multiple variants found for {label}")
+        choices = list(data[candidates_key].keys())
+        selected = st.radio(f"Choose one {label} version to use for ALL time periods:", choices, key=field_prefix)
+        selected_values = data[candidates_key][selected]
+
+        for subfield in [
+            "Actual_1", "Actual_2", "Expected",
+            "Proj_Y1", "Proj_Y2", "Proj_Y3", "Proj_Y4", "Proj_Y5"
+        ]:
+            field_name = f"{field_prefix}_{subfield}"
+            if isinstance(selected_values, dict) and field_name in selected_values:
+                data[field_name] = selected_values[field_name]
+
 if uploaded_pdf:
     with st.spinner("🧠 OCRing the CIM..."):
         pdf_bytes = uploaded_pdf.read()
@@ -48,53 +68,32 @@ if uploaded_pdf:
         ai_prompt = f"""
 You are analyzing OCR output from a Confidential Information Memorandum (CIM) for an LBO model.
 
-Your job is to extract the following **hardcoded** financials (not calculated, not inferred):
+Your task is to extract the following **hardcoded** financials (not calculated, not inferred):
 
-1. Revenue
-   - Three actual years (oldest to newest) → used in the P&L section
-   - Two most recent actual years → used in projections section
-   - One expected/budget year (usually labeled “Budget” or “Expected”)
-   - Five projected years (clearly labeled “Projected”, “Forecast”, or future years beyond expected)
+### Financial Metrics:
+1. **Revenue**
+   - Two most recent actual years (e.g., 2023A, 2024A)
+   - One expected/budget year (e.g., 2025E)
+   - Five projected years (e.g., 2026E to 2030E)
 
-2. EBITDA (prefer Adjusted or RR Adj.)
-   - Same structure as Revenue:
-     • Three actual years (oldest to newest)
-     • Two most recent actual years
-     • One expected/budget year
-     • Five projected years
+2. **EBITDA** (prefer Adjusted or RR Adj.)
+   - Same format: 2 recent actuals, 1 expected, 5 projected
 
-3. Maintenance CapEx
-   - Prefer labeled “Maintenance CapEx”, not total CapEx
-   - Two actual years (most recent if available)
-   - One expected
-   - Five projected
+3. **Maintenance CapEx**
+   - Prefer labeled “Maintenance CapEx” (not total CapEx)
+   - Same format: 2 actual, 1 expected, 5 projected
 
-4. Acquisition Count per projected year
-   - If none is explicitly mentioned, assume 1 per year
+4. **Acquisition Count**
+   - Count of planned acquisitions per projected year
+   - If none are explicitly listed, say \"assumed\": 1 for each year
 
-Return your answer in valid JSON using this structure:
+### Candidate Handling Instructions:
+If **multiple values** are found for any metric (e.g., both "Adj. EBITDA" and "Reported EBITDA"), return all values in a `*_Candidates` field, like this:
 
 ```json
-{{
-  "Revenue_Actual_1": ..., "Revenue_Actual_2": ..., "Revenue_Actual_3": ..., 
-  "Revenue_Hist_1": ..., "Revenue_Hist_2": ..., 
-  "Revenue_Expected": ..., 
-  "Revenue_Proj_Y1": ..., "Revenue_Proj_Y2": ..., "Revenue_Proj_Y3": ..., 
-  "Revenue_Proj_Y4": ..., "Revenue_Proj_Y5": ...,
-
-  "EBITDA_Actual_1": ..., "EBITDA_Actual_2": ..., "EBITDA_Actual_3": ..., 
-  "EBITDA_Hist_1": ..., "EBITDA_Hist_2": ..., 
-  "EBITDA_Expected": ..., 
-  "EBITDA_Proj_Y1": ..., "EBITDA_Proj_Y2": ..., "EBITDA_Proj_Y3": ..., 
-  "EBITDA_Proj_Y4": ..., "EBITDA_Proj_Y5": ...,
-
-  "CapEx_Maint_Actual_1": ..., "CapEx_Maint_Actual_2": ..., 
-  "CapEx_Maint_Expected": ..., "CapEx_Maint_Proj_Y1": ..., 
-  "CapEx_Maint_Proj_Y2": ..., "CapEx_Maint_Proj_Y3": ..., 
-  "CapEx_Maint_Proj_Y4": ..., "CapEx_Maint_Proj_Y5": ...,
-
-  "Num_Acq_Proj_Y1": ..., "Num_Acq_Proj_Y2": ..., "Num_Acq_Proj_Y3": ..., 
-  "Num_Acq_Proj_Y4": ..., "Num_Acq_Proj_Y5": ...
+"EBITDA_Candidates": {{
+  "Adj. EBITDA": {{"EBITDA_Actual_1": ..., "EBITDA_Proj_Y5": ...}},
+  "Reported EBITDA": {{"EBITDA_Actual_1": ..., "EBITDA_Proj_Y5": ...}}
 }}
 
 Text to analyze:
@@ -111,10 +110,9 @@ Text to analyze:
         )
 
         response_text = response.choices[0].message.content.strip()
-        st.subheader("📥 Extracted Financial Metrics (JSON)")
+        st.subheader("📅 Extracted Financial Metrics (JSON)")
         st.code(response_text, language="json")
 
-        # --- Parse GPT output ---
         cleaned_json_text = response_text
         if "```json" in cleaned_json_text:
             match = re.search(r"```json(.*?)```", cleaned_json_text, re.DOTALL)
@@ -129,7 +127,13 @@ Text to analyze:
             st.error(f"❌ Failed to parse GPT response as JSON:\n{e}")
             st.stop()
 
-        # --- Excel cell mapping ---
+        # Allow user to pick consistent metric types
+        pick_metric_group("EBITDA", "EBITDA")
+        pick_metric_group("Revenue", "Revenue")
+        pick_metric_group("CapEx_Maint", "Maintenance CapEx")
+        pick_metric_group("Num_Acq_Proj", "Acquisition Count")
+
+        # Excel cell mapping
         mapping = {
             ("Revenue_Actual_1",): ("Model", "E20"),
             ("Revenue_Actual_2",): ("Model", "F20"),
@@ -183,9 +187,10 @@ Text to analyze:
         output.seek(0)
 
         st.download_button(
-            label="📥 Download Updated LBO Excel",
+            label="📅 Download Updated LBO Excel",
             data=output,
             file_name="updated_lbo_model.xlsx",
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
+
 

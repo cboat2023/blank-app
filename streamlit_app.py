@@ -91,3 +91,21 @@ Return your answer in valid JSON using this structure:
 Text to analyze:
 {combined_text}
 """
+    # --- AI Financial Extraction ---
+    with st.spinner("🔍 Extracting financial metrics with GPT-4..."):
+
+        ai_prompt = f"""...your full prompt here..."""
+
+        response = openai_client.chat.completions.create(
+            model="gpt-4",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": ai_prompt}
+            ],
+            temperature=0,
+        )
+
+        response_text = response.choices[0].message.content.strip()
+
+        st.subheader("📥 Extracted Financial Metrics (JSON)")
+        st.code(response_text, language="json")

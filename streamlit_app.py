@@ -226,12 +226,12 @@ Text to analyze:
         pick_metric_group("Num_Acq_Proj", "Acquisition Count")
 
         if st.button("✅ Continue to Export LBO Excel"):
-    # Excel cell mapping logic here
-    mapping = {
-        ("Revenue_Actual_1",): ("Model", "E20"),
-        ...
-        ("Num_Acq_Proj_Y5",): ("Acquisitions", "R13"),
-    }
+            # Excel cell mapping logic here
+            mapping = {
+                ("Revenue_Actual_1",): ("Model", "E20"),
+                ...
+                ("Num_Acq_Proj_Y5",): ("Acquisitions", "R13"),
+            }
 
     template_path = "TJC Practice Simple Model New (7).xlsx"
     wb = openpyxl.load_workbook(template_path)

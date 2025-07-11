@@ -58,7 +58,7 @@ Your job is to extract the following **hardcoded** financials (not calculated, n
    - Two actual years
    - One expected/budget year
    - Five projected years
-   - Also: any new region / acquisition revenue
+  
 
 2. EBITDA (prefer Adjusted or RR Adj.)
    - Same format: 2 actual, 1 expected, 5 forecast
@@ -67,7 +67,8 @@ Your job is to extract the following **hardcoded** financials (not calculated, n
    - Prefer labeled “Maintenance CapEx”, not total CapEx
    - 2 actual, 1 expected, 5 projected
 
-4. Acquisition Count per projected year
+4. Acquisition Count per projected year 
+- if can't find any put 1 per year
 
 Return your answer in valid JSON using this structure:
 ```json
@@ -75,11 +76,6 @@ Return your answer in valid JSON using this structure:
   "Revenue_Actual_1": ..., "Revenue_Actual_2": ..., "Revenue_Expected": ..., 
   "Revenue_Proj_Y1": ..., "Revenue_Proj_Y2": ..., "Revenue_Proj_Y3": ..., 
   "Revenue_Proj_Y4": ..., "Revenue_Proj_Y5": ...,
-
-  "Revenue_Acq_Actual_1": ..., "Revenue_Acq_Actual_2": ..., 
-  "Revenue_Acq_Expected": ..., "Revenue_Acq_Proj_Y1": ..., 
-  "Revenue_Acq_Proj_Y2": ..., "Revenue_Acq_Proj_Y3": ..., 
-  "Revenue_Acq_Proj_Y4": ..., "Revenue_Acq_Proj_Y5": ...,
 
   "EBITDA_Actual_1": ..., "EBITDA_Actual_2": ..., "EBITDA_Expected": ..., 
   "EBITDA_Proj_Y1": ..., "EBITDA_Proj_Y2": ..., "EBITDA_Proj_Y3": ..., 

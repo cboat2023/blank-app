@@ -94,40 +94,46 @@ Text to analyze:
 
         # === Excel mapping dictionary ===
         mapping = {
-            ("Revenue_Actual_1",): ("Model", "E20"),
-            ("Revenue_Actual_2",): ("Model", "F20"),
-            ("Revenue_Expected",): ("Model", "G20"),
+    # Revenue (Actual + Expected)
+    ("Revenue_Actual_1",): ("Model", "E20"),
+    ("Revenue_Actual_2",): ("Model", "F20"),
+    ("Revenue_Expected",): ("Model", "G20"),
 
-            ("EBITDA_Actual_1",): ("Model", "E28"),
-            ("EBITDA_Actual_2",): ("Model", "F28"),
-            ("EBITDA_Expected",): ("Model", "G28"),
+    # EBITDA (Actual + Expected)
+    ("EBITDA_Actual_1",): ("Model", "E28"),
+    ("EBITDA_Actual_2",): ("Model", "F28"),
+    ("EBITDA_Expected",): ("Model", "G28"),
 
-            ("Revenue_Proj_Y1",): ("Expected", "AC20"),
-            ("Revenue_Proj_Y2",): ("Projections", "AD20"),
-            ("Revenue_Proj_Y3",): ("Projections", "AE20"),
-            ("Revenue_Proj_Y4",): ("Projections", "AF20"),
-            ("Revenue_Proj_Y5",): ("Projections", "AG20"),
+    # Revenue (Projected)
+    ("Revenue_Proj_Y1",): ("Model", "AC20"),
+    ("Revenue_Proj_Y2",): ("Model", "AD20"),
+    ("Revenue_Proj_Y3",): ("Model", "AE20"),
+    ("Revenue_Proj_Y4",): ("Model", "AF20"),
+    ("Revenue_Proj_Y5",): ("Model", "AG20"),
 
-            ("EBITDA_Proj_Y1",): ("Expected", "AC28"),
-            ("EBITDA_Proj_Y2",): ("Projections", "AD28"),
-            ("EBITDA_Proj_Y3",): ("Projections", "AE28"),
-            ("EBITDA_Proj_Y4",): ("Projections", "AF28"),
-            ("EBITDA_Proj_Y5",): ("Projections", "AG28"),
+    # EBITDA (Projected)
+    ("EBITDA_Proj_Y1",): ("Model", "AC28"),
+    ("EBITDA_Proj_Y2",): ("Model", "AD28"),
+    ("EBITDA_Proj_Y3",): ("Model", "AE28"),
+    ("EBITDA_Proj_Y4",): ("Model", "AF28"),
+    ("EBITDA_Proj_Y5",): ("Model", "AG28"),
 
-            ("CapEx_Maint_Actual_1",): ("CapEx", "AA52"),
-            ("CapEx_Maint_Actual_2",): ("CapEx", "AB52"),
-            ("CapEx_Maint_Expected",): ("CapEx", "AC52"),
-            ("CapEx_Maint_Proj_Y1",): ("CapEx", "AD52"),
-            ("CapEx_Maint_Proj_Y2",): ("CapEx", "AE52"),
-            ("CapEx_Maint_Proj_Y3",): ("CapEx", "AF52"),
-            ("CapEx_Maint_Proj_Y4",): ("CapEx", "AG52"),
-            ("CapEx_Maint_Proj_Y5",): ("CapEx", "AH52"),
+    # Maintenance CapEx
+    ("CapEx_Maint_Actual_1",): ("Model", "AA52"),
+    ("CapEx_Maint_Actual_2",): ("Model", "AB52"),
+    ("CapEx_Maint_Expected",): ("Model", "AC52"),
+    ("CapEx_Maint_Proj_Y1",): ("Model", "AD52"),
+    ("CapEx_Maint_Proj_Y2",): ("Model", "AE52"),
+    ("CapEx_Maint_Proj_Y3",): ("Model", "AF52"),
+    ("CapEx_Maint_Proj_Y4",): ("Model", "AG52"),
+    ("CapEx_Maint_Proj_Y5",): ("Model", "AH52"),
 
-            ("Num_Acq_Proj_Y1",): ("Acquisitions", "N13"),
-            ("Num_Acq_Proj_Y2",): ("Acquisitions", "O13"),
-            ("Num_Acq_Proj_Y3",): ("Acquisitions", "P13"),
-            ("Num_Acq_Proj_Y4",): ("Acquisitions", "Q13"),
-            ("Num_Acq_Proj_Y5",): ("Acquisitions", "R13"),
+    # Acquisition Count (Projected) — Acquisitions sheet
+    ("Num_Acq_Proj_Y1",): ("Acquisitions", "N13"),
+    ("Num_Acq_Proj_Y2",): ("Acquisitions", "O13"),
+    ("Num_Acq_Proj_Y3",): ("Acquisitions", "P13"),
+    ("Num_Acq_Proj_Y4",): ("Acquisitions", "Q13"),
+    ("Num_Acq_Proj_Y5",): ("Acquisitions", "R13"),
         }
 
         # === Load Excel Template ===

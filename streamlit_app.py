@@ -4,7 +4,7 @@ import io
 import fitz  # PyMuPDF
 from google.cloud import vision
 from google.oauth2 import service_account
-from openai import openai
+import openai
 
 
 

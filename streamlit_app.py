@@ -69,6 +69,12 @@ if uploaded_pdf:
 
     st.success("✅ OCR complete!")
 
+    # After combined_text has been built
+    st.subheader("🔍 Full OCR Text")
+    with st.expander("Click to view OCR output"):
+        st.text(combined_text)
+
+
     with st.spinner("🔍 Extracting financial metrics with GPT-4..."):
         ai_prompt = f"""
 You are analyzing OCR output from a Confidential Information Memorandum (CIM) for an LBO model.

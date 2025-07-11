@@ -5,7 +5,9 @@ import fitz  # PyMuPDF
 from google.cloud import vision
 from google.oauth2 import service_account
 import openai
-
+import pandas as pd
+import openpyxl
+from io import BytesIO
 
 
 
@@ -107,3 +109,77 @@ Text to analyze:
 
         st.subheader("📥 Extracted Financial Metrics (JSON)")
         st.code(response_text, language="json")
+
+# === Add this after GPT response_text is available ===
+try:
+    data = json.loads(response_text)
+except Exception as e:
+    st.error("❌ Failed to parse GPT response as JSON")
+    st.stop()
+
+# === Excel mapping dictionary ===
+mapping = {
+    ("Revenue_Actual_1",): ("Model", "E20"),
+    ("Revenue_Actual_2",): ("Model", "F20"),
+    ("Revenue_Expected",): ("Model", "G20"),
+
+    ("EBITDA_Actual_1",): ("Model", "E28"),
+    ("EBITDA_Actual_2",): ("Model", "F28"),
+    ("EBITDA_Expected",): ("Model", "G28"),
+
+    ("Revenue_Proj_Y1",): ("Expected", "AC20"),
+    ("Revenue_Proj_Y2",): ("Projections", "AD20"),
+    ("Revenue_Proj_Y3",): ("Projections", "AE20"),
+    ("Revenue_Proj_Y4",): ("Projections", "AF20"),
+    ("Revenue_Proj_Y5",): ("Projections", "AG20"),
+
+    ("EBITDA_Proj_Y1",): ("Expected", "AC28"),
+    ("EBITDA_Proj_Y2",): ("Projections", "AD28"),
+    ("EBITDA_Proj_Y3",): ("Projections", "AE28"),
+    ("EBITDA_Proj_Y4",): ("Projections", "AF28"),
+    ("EBITDA_Proj_Y5",): ("Projections", "AG28"),
+
+    ("Revenue_Acq_Expected",): ("Expected", "AC22"),
+
+    ("CapEx_Maint_Actual_1",): ("CapEx", "AA52"),
+    ("CapEx_Maint_Actual_2",): ("CapEx", "AB52"),
+    ("CapEx_Maint_Expected",): ("CapEx", "AC52"),
+    ("CapEx_Maint_Proj_Y1",): ("CapEx", "AD52"),
+    ("CapEx_Maint_Proj_Y2",): ("CapEx", "AE52"),
+    ("CapEx_Maint_Proj_Y3",): ("CapEx", "AF52"),
+    ("CapEx_Maint_Proj_Y4",): ("CapEx", "AG52"),
+    ("CapEx_Maint_Proj_Y5",): ("CapEx", "AH52"),
+
+    ("Num_Acq_Proj_Y1",): ("Acquisitions", "N13"),
+    ("Num_Acq_Proj_Y2",): ("Acquisitions", "O13"),
+    ("Num_Acq_Proj_Y3",): ("Acquisitions", "P13"),
+    ("Num_Acq_Proj_Y4",): ("Acquisitions", "Q13"),
+    ("Num_Acq_Proj_Y5",): ("Acquisitions", "R13"),
+}
+
+# === Load template Excel workbook ===
+template_path = "lbo_template.xlsx"  # Must be uploaded to repo
+wb = openpyxl.load_workbook(template_path)
+
+# === Fill in the mapped values ===
+for key, (sheet_name, cell) in mapping.items():
+    metric = key[0]
+    if metric in data:
+        value = data[metric]
+        try:
+            ws = wb[sheet_name]
+            ws[cell] = value
+        except Exception as e:
+            st.warning(f"Failed to write {metric} → {sheet_name}!{cell}: {e}")
+
+# === Save to in-memory file ===
+output = BytesIO()
+wb.save(output)
+output.seek(0)
+
+st.download_button(
+    label="📥 Download Updated LBO Excel",
+    data=output,
+    file_name="updated_lbo_model.xlsx",
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+)

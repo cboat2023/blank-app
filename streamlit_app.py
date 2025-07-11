@@ -24,6 +24,36 @@ openai.api_key = openai_api_key
 st.title("📊 CIM Financial Extractor (OCR + AI)")
 uploaded_pdf = st.file_uploader("📁 Upload CIM PDF", type=["pdf"])
 
+def join_wrapped_labels(text):
+    """
+    Joins broken label lines like:
+    'Adj. 4-Wall RR\nEBITDA' -> 'Adj. 4-Wall RR EBITDA'
+    """
+    # Join lines where a line ends without a number and the next line starts with a capital letter
+    lines = text.split('\n')
+    joined_lines = []
+    buffer = ""
+
+    for line in lines:
+        line = line.strip()
+        if not line:
+            continue
+        if re.match(r"^[\d\$\(]", line):  # starts with a number/dollar — new data row
+            if buffer:
+                joined_lines.append(buffer)
+                buffer = ""
+            joined_lines.append(line)
+        else:
+            if buffer:
+                buffer += " " + line
+            else:
+                buffer = line
+    if buffer:
+        joined_lines.append(buffer)
+
+    return "\n".join(joined_lines)
+
+
 def preclean_combined_text(raw_text):
     # Step 1: Join broken label lines
     text = join_wrapped_labels(raw_text)

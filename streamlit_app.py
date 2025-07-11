@@ -51,16 +51,19 @@ You are analyzing OCR output from a Confidential Information Memorandum (CIM) fo
 Your job is to extract the following **hardcoded** financials (not calculated, not inferred):
 
 1. Revenue
-   - Two actual years
-   - One expected/budget year
-   - Five projected years
+   - Two most recent actual years (look for historicals in descending order)
+   - One expected or budget year (usually the current year or labeled "Budget" / "Expected")
+   - Five projected years (clearly labeled as "Projected", "Forecast", or future years beyond expected)
 
 2. EBITDA (prefer Adjusted or RR Adj.)
-   - Same format: 2 actual, 1 expected, 5 forecast
+   - Same structure:
+     • Two most recent actual years
+     • One expected or budget year
+     • Five projected years
 
 3. Maintenance CapEx
    - Prefer labeled “Maintenance CapEx”, not total CapEx
-   - 2 actual, 1 expected, 5 projected
+   - 2 most recent actual, 1 expected, 5 projected
 
 4. Acquisition Count per projected year
    - If none is explicitly mentioned, assume 1 per year

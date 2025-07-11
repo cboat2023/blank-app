@@ -2,3 +2,4 @@ openai>=1.0.0
 google-cloud-vision
 PyMuPDF
 streamlit
+openpyxl

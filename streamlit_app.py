@@ -51,19 +51,23 @@ You are analyzing OCR output from a Confidential Information Memorandum (CIM) fo
 Your job is to extract the following **hardcoded** financials (not calculated, not inferred):
 
 1. Revenue
-   - Two most recent actual years (look for historicals in descending order ex: if 2022A,2023A,2024A take only 2023A and 2024A)
-   - One expected or budget year (usually the current year or labeled "Budget" / "Expected")
-   - Five projected years (clearly labeled as "Projected", "Forecast", or future years beyond expected)
+   - Three actual years (oldest to newest) → used in the P&L section
+   - Two most recent actual years → used in projections section
+   - One expected/budget year (usually labeled “Budget” or “Expected”)
+   - Five projected years (clearly labeled “Projected”, “Forecast”, or future years beyond expected)
 
 2. EBITDA (prefer Adjusted or RR Adj.)
-   - Same structure:
+   - Same structure as Revenue:
+     • Three actual years (oldest to newest)
      • Two most recent actual years
-     • One expected or budget year
+     • One expected/budget year
      • Five projected years
 
 3. Maintenance CapEx
    - Prefer labeled “Maintenance CapEx”, not total CapEx
-   - 2 most recent actual, 1 expected, 5 projected
+   - Two actual years (most recent if available)
+   - One expected
+   - Five projected
 
 4. Acquisition Count per projected year
    - If none is explicitly mentioned, assume 1 per year
@@ -72,11 +76,15 @@ Return your answer in valid JSON using this structure:
 
 ```json
 {{
-  "Revenue_Actual_1": ..., "Revenue_Actual_2": ..., "Revenue_Expected": ..., 
+  "Revenue_Actual_1": ..., "Revenue_Actual_2": ..., "Revenue_Actual_3": ..., 
+  "Revenue_Hist_1": ..., "Revenue_Hist_2": ..., 
+  "Revenue_Expected": ..., 
   "Revenue_Proj_Y1": ..., "Revenue_Proj_Y2": ..., "Revenue_Proj_Y3": ..., 
   "Revenue_Proj_Y4": ..., "Revenue_Proj_Y5": ...,
 
-  "EBITDA_Actual_1": ..., "EBITDA_Actual_2": ..., "EBITDA_Expected": ..., 
+  "EBITDA_Actual_1": ..., "EBITDA_Actual_2": ..., "EBITDA_Actual_3": ..., 
+  "EBITDA_Hist_1": ..., "EBITDA_Hist_2": ..., 
+  "EBITDA_Expected": ..., 
   "EBITDA_Proj_Y1": ..., "EBITDA_Proj_Y2": ..., "EBITDA_Proj_Y3": ..., 
   "EBITDA_Proj_Y4": ..., "EBITDA_Proj_Y5": ...,
 
@@ -88,6 +96,7 @@ Return your answer in valid JSON using this structure:
   "Num_Acq_Proj_Y1": ..., "Num_Acq_Proj_Y2": ..., "Num_Acq_Proj_Y3": ..., 
   "Num_Acq_Proj_Y4": ..., "Num_Acq_Proj_Y5": ...
 }}
+
 Text to analyze:
 {combined_text}
 """

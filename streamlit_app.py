@@ -10,43 +10,6 @@ import openpyxl
 from io import BytesIO
 import re
 
-# --- GCP Credentials from secrets ---
-creds_dict = json.loads(st.secrets["GCP"]["gcp_credentials"])
-credentials = service_account.Credentials.from_service_account_info(creds_dict)
-client = vision.ImageAnnotatorClient(credentials=credentials)
-
-# --- OpenAI credentials ---
-openai_api_key = st.secrets["OPENAI"]["OPENAI_API_KEY"]
-openai.api_key = openai_api_key
-
-# --- Streamlit UI ---
-st.title("📊 CIM Financial Extractor (OCR + AI)")
-uploaded_pdf = st.file_uploader("📁 Upload CIM PDF", type=["pdf"])
-
-def pick_metric_group(field_prefix, label):
-    """
-    If *_Candidates exists (e.g., EBITDA_Candidates), ask user to pick a single variant,
-    then apply that value to all matching keys like EBITDA_Actual_1, _2, Expected, Proj_Y1–5.
-    """
-    candidates_key = f"{field_prefix}_Candidates"
-    if candidates_key in data:
-        st.subheader(f"🧐 Multiple variants found for {label}")
-        choices = list(data[candidates_key].keys())
-        if len(choices) == 1:
-            selected = choices[0]
-            st.info(f"✅ Only one {label} found: using \"{selected}\"")
-        else:
-            selected = st.radio(f"Choose one {label} version to use for ALL time periods:", choices, key=field_prefix)
-        selected_values = data[candidates_key][selected]
-
-        for subfield in [
-            "Actual_1", "Actual_2", "Actual_3", "Expected",
-            "Proj_Y1", "Proj_Y2", "Proj_Y3", "Proj_Y4", "Proj_Y5"
-        ]:
-            field_name = f"{field_prefix}_{subfield}"
-            if isinstance(selected_values, dict) and subfield in selected_values:
-                data[field_name] = selected_values[subfield]
-import re
 
 # --- GCP Credentials from secrets ---
 creds_dict = json.loads(st.secrets["GCP"]["gcp_credentials"])

@@ -33,6 +33,9 @@ def pick_metric_group(field_prefix, label):
         st.subheader(f"🧐 Multiple variants found for {label}")
         choices = list(data[candidates_key].keys())
         selected = st.radio(f"Choose one {label} version to use for ALL time periods:", choices, key=field_prefix)
+        if len(choices) == 1:
+            selected = choices[0]
+            st.info(f"✅ Only one {label} found: using “{selected}”")
         selected_values = data[candidates_key][selected]
 
         for subfield in [
@@ -40,8 +43,9 @@ def pick_metric_group(field_prefix, label):
             "Proj_Y1", "Proj_Y2", "Proj_Y3", "Proj_Y4", "Proj_Y5"
         ]:
             field_name = f"{field_prefix}_{subfield}"
-            if isinstance(selected_values, dict) and field_name in selected_values:
-                data[field_name] = selected_values[field_name]
+            if isinstance(selected_values, dict) and subfield in selected_values:
+                data[field_name] = selected_values[subfield]
+
 
 if uploaded_pdf:
     with st.spinner("🧠 OCRing the CIM..."):

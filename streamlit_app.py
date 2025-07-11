@@ -88,27 +88,38 @@ Your task is to extract the following **hardcoded** financials (not calculated, 
    - If none are explicitly listed, say \"assumed\": 1 for each year
 
 ### Candidate Handling Instructions:
-If **multiple values** are found for any metric (e.g., both "Adj. EBITDA" and "Reported EBITDA"), return all values in a `*_Candidates` field.
+If multiple types of a metric are found (e.g., "Adj. EBITDA" and "Reported EBITDA"), provide them inside a `*_Candidates` field. Each entry should be a dictionary with values for all 8 periods:
 
-### Expected JSON Format (example):
-{{
-  "Revenue_Actual_1": 100.5,
-  "Revenue_Actual_2": 110.2,
-  "Revenue_Expected": 120.0,
-  "Revenue_Proj_Y1": 130.0,
-  "Revenue_Proj_Y2": 140.0,
-  "Revenue_Proj_Y3": 150.0,
-  "Revenue_Proj_Y4": 160.0,
-  "Revenue_Proj_Y5": 170.0,
-  "EBITDA_Actual_1": 20.1,
-  "EBITDA_Actual_2": 22.0,
-  "EBITDA_Expected": 24.0,
-  "EBITDA_Proj_Y1": 26.0,
-  "EBITDA_Proj_Y2": 28.0,
-  "EBITDA_Proj_Y3": 30.0,
-  "EBITDA_Proj_Y4": 32.0,
-  "EBITDA_Proj_Y5": 34.0
+- Actual_1, Actual_2
+- Expected
+- Proj_Y1 to Proj_Y5
+
+For example:
+
+```json 
+"EBITDA_Candidates": {{
+  "Adj. EBITDA": {{
+    "Actual_1": 25.1,
+    "Actual_2": 27.3,
+    "Expected": 30.0,
+    "Proj_Y1": 32.5,
+    "Proj_Y2": 35.0,
+    "Proj_Y3": 37.5,
+    "Proj_Y4": 40.0,
+    "Proj_Y5": 42.0
+  }},
+  "Reported EBITDA": {{
+    "Actual_1": 22.4,
+    "Actual_2": 24.1,
+    "Expected": 28.5,
+    "Proj_Y1": 31.0,
+    "Proj_Y2": 33.0,
+    "Proj_Y3": 35.0,
+    "Proj_Y4": 37.0,
+    "Proj_Y5": 39.0
+  }}
 }}
+
 
 IMPORTANT: You MUST respond with ONLY valid JSON. Do not include any explanatory text, markdown formatting, or code blocks. Start directly with the opening curly brace and end with the closing curly brace.
 

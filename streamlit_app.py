@@ -51,21 +51,40 @@ You are analyzing OCR output from a Confidential Information Memorandum (CIM) fo
 
 Your job is to extract the following **hardcoded** financials (not calculated, not inferred):
 
-1. Revenue – 2 actual, 1 expected, 5 projected
-2. EBITDA – same format
-3. Maintenance CapEx – 2 actual, 1 expected, 5 projected
-4. Acquisition Count – 5 projected years (if missing, use 1 per year)
+1. Revenue
+   - Two actual years
+   - One expected/budget year
+   - Five projected years
 
-Return ONLY a valid JSON object with `null` as default for missing values.
-DO NOT include markdown, backticks, or explanations.
+2. EBITDA (prefer Adjusted or RR Adj.)
+   - Same format: 2 actual, 1 expected, 5 forecast
 
-Example format:
-{{
-  "Revenue_Actual_1": null,
-  "Revenue_Actual_2": null,
-  "Revenue_Expected": null,
-  "Revenue_Proj_Y1": null,
-  ...
+3. Maintenance CapEx
+   - Prefer labeled “Maintenance CapEx”, not total CapEx
+   - 2 actual, 1 expected, 5 projected
+
+4. Acquisition Count per projected year
+   - If none is explicitly mentioned, assume 1 per year
+
+Return your answer in valid JSON using this structure:
+
+```json
+
+  "Revenue_Actual_1": ..., "Revenue_Actual_2": ..., "Revenue_Expected": ..., 
+  "Revenue_Proj_Y1": ..., "Revenue_Proj_Y2": ..., "Revenue_Proj_Y3": ..., 
+  "Revenue_Proj_Y4": ..., "Revenue_Proj_Y5": ...,
+
+  "EBITDA_Actual_1": ..., "EBITDA_Actual_2": ..., "EBITDA_Expected": ..., 
+  "EBITDA_Proj_Y1": ..., "EBITDA_Proj_Y2": ..., "EBITDA_Proj_Y3": ..., 
+  "EBITDA_Proj_Y4": ..., "EBITDA_Proj_Y5": ...,
+
+  "CapEx_Maint_Actual_1": ..., "CapEx_Maint_Actual_2": ..., 
+  "CapEx_Maint_Expected": ..., "CapEx_Maint_Proj_Y1": ..., 
+  "CapEx_Maint_Proj_Y2": ..., "CapEx_Maint_Proj_Y3": ..., 
+  "CapEx_Maint_Proj_Y4": ..., "CapEx_Maint_Proj_Y5": ...,
+
+  "Num_Acq_Proj_Y1": ..., "Num_Acq_Proj_Y2": ..., "Num_Acq_Proj_Y3": ..., 
+  "Num_Acq_Proj_Y4": ..., "Num_Acq_Proj_Y5": ...
 }}
 
 Text to analyze:

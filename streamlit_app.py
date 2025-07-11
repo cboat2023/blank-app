@@ -72,7 +72,7 @@ Your task is to extract the following **hardcoded** financials (not calculated, 
 
 ### Financial Metrics:
 1. **Revenue**
-   - Two most recent actual years (e.g., 2023A, 2024A)
+   - Three most recent actual years (e.g., 2022A, 2023A, 2024A)
    - One expected/budget year (e.g., 2025E)
    - Five projected years (e.g., 2026E to 2030E)
 

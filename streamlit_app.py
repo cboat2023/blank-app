@@ -46,7 +46,7 @@ if uploaded_pdf:
     # --- AI Financial Extraction ---
     with st.spinner("🔍 Extracting financial metrics with GPT-4..."):
 
-        ai_prompt = f"""
+       ai_prompt = f"""
 You are analyzing OCR output from a Confidential Information Memorandum (CIM) for an LBO model.
 
 Your job is to extract the following **hardcoded** financials (not calculated, not inferred):
@@ -69,7 +69,7 @@ Your job is to extract the following **hardcoded** financials (not calculated, n
 Return your answer in valid JSON using this structure:
 
 ```json
-
+{{
   "Revenue_Actual_1": ..., "Revenue_Actual_2": ..., "Revenue_Expected": ..., 
   "Revenue_Proj_Y1": ..., "Revenue_Proj_Y2": ..., "Revenue_Proj_Y3": ..., 
   "Revenue_Proj_Y4": ..., "Revenue_Proj_Y5": ...,

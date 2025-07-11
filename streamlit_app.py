@@ -95,7 +95,7 @@ Your task is to extract the following **hardcoded** financials (not calculated, 
 ### Candidate Handling Instructions:
 If multiple types of a metric are found (e.g., "Adj. EBITDA" and "Reported EBITDA"), provide them inside a `*_Candidates` field. Each entry should be a dictionary with values for all 8 periods:
 
-- Actual_1, Actual_2
+- Actual_1, Actual_2, Actual_3
 - Expected
 - Proj_Y1 to Proj_Y5
 
@@ -106,6 +106,7 @@ For example:
   "Adj. EBITDA": {{
     "Actual_1": 25.1,
     "Actual_2": 27.3,
+    "Actual_3": 29.1,
     "Expected": 30.0,
     "Proj_Y1": 32.5,
     "Proj_Y2": 35.0,
@@ -116,6 +117,7 @@ For example:
   "Reported EBITDA": {{
     "Actual_1": 22.4,
     "Actual_2": 24.1,
+    "Actual_3": 25.1,
     "Expected": 28.5,
     "Proj_Y1": 31.0,
     "Proj_Y2": 33.0,

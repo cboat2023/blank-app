@@ -24,6 +24,22 @@ openai.api_key = openai_api_key
 st.title("📊 CIM Financial Extractor (OCR + AI)")
 uploaded_pdf = st.file_uploader("📁 Upload CIM PDF", type=["pdf"])
 
+def preclean_combined_text(raw_text):
+    # Remove hanging headers like "Joan Comp" and "OVERVIEW"
+    text = re.sub(r"\b(Joan Comp|OVERVIEW|onential - Not For Distribution)\b", "", raw_text)
+
+    # Collapse multiple dollar signs next to each other into a single row
+    text = re.sub(r"\$\s+", "$", text)
+    text = re.sub(r"\s{2,}", " ", text)  # Collapse big spaces
+
+    # Ensure "4-Wall EBITDA" and its variants are properly joined with numbers
+    text = re.sub(r"(?<=\b4-Wall EBITDA)\s*\n", " ", text)
+    text = re.sub(r"(?<=Adj\. 4-Wall RR EBITDA)\s*\n", " ", text)
+    text = re.sub(r"(?<=Total RR Adj\. EBITDA \(2-Year\))\s*\n", " ", text)
+
+    return text
+
+
 def pick_metric_group(field_prefix, label):
     """
     If *_Candidates exists (e.g., EBITDA_Candidates), ask user to pick a single variant,
@@ -68,6 +84,9 @@ if uploaded_pdf:
                 combined_text += response.full_text_annotation.text + "\n"
 
     st.success("✅ OCR complete!")
+
+    combined_text = preclean_combined_text(combined_text)
+
 
     # After combined_text has been built
     st.subheader("🔍 Full OCR Text")

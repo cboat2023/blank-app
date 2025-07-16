@@ -325,7 +325,7 @@ Text to analyze:
         pick_metric_group("Num_Acq_Proj", "Acquisition Count")
 
         # Excel cell mapping
-     mapping = {
+         mapping = {
          # ---------------------
          # P&L Table (Historical)
         # ---------------------

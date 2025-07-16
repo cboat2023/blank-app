@@ -262,7 +262,7 @@ Text to analyze:
         
         if len(choices) == 1:
             selected = choices[0]
-            st.info(f"✅ Only one {label} found: using "{selected}"")
+            st.info(f"✅ Only one {label} found: using '{selected}'")
         else:
             selected = st.radio(
                 f"Choose one {label} version to use for ALL time periods:", 
@@ -438,5 +438,3 @@ Text to analyze:
 if __name__ == "__main__":
     extractor = CIMExtractor()
     extractor.run()
-
-

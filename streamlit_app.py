@@ -326,61 +326,61 @@ Text to analyze:
 
         # Excel cell mapping
      mapping = {
-            # ---------------------
-            # P&L Table (Historical)
-            # ---------------------
-            ("Revenue_Actual_1",): ("Model", "E20"),  # Oldest actual
-            ("Revenue_Actual_2",): ("Model", "F20"),
-            ("Revenue_Actual_3",): ("Model", "G20"),
-        
-            ("EBITDA_Actual_1",): ("Model", "E28"),
-            ("EBITDA_Actual_2",): ("Model", "F28"),
-            ("EBITDA_Actual_3",): ("Model", "G28"),
-        
-            # ---------------------
-            # Projections (6 years forward)
-            # ---------------------
-            ("Revenue_Proj_Y1",): ("Model", "AC20"),
-            ("Revenue_Proj_Y2",): ("Model", "AD20"),
-            ("Revenue_Proj_Y3",): ("Model", "AE20"),
-            ("Revenue_Proj_Y4",): ("Model", "AF20"),
-            ("Revenue_Proj_Y5",): ("Model", "AG20"),
-            ("Revenue_Proj_Y6",): ("Model", "AH20"),
-        
-            ("EBITDA_Proj_Y1",): ("Model", "AC28"),
-            ("EBITDA_Proj_Y2",): ("Model", "AD28"),
-            ("EBITDA_Proj_Y3",): ("Model", "AE28"),
-            ("EBITDA_Proj_Y4",): ("Model", "AF28"),
-            ("EBITDA_Proj_Y5",): ("Model", "AG28"),
-            ("EBITDA_Proj_Y6",): ("Model", "AH28"),
-        
-            # ---------------------
-            # Maintenance CapEx (Z-AA-AB...AH52)
-            # ---------------------
-            ("CapEx_Maint_Actual_1",): ("Model", "Z52"),
-            ("CapEx_Maint_Actual_2",): ("Model", "AA52"),
-            ("CapEx_Maint_Actual_3",): ("Model", "AB52"),
-            ("CapEx_Maint_Proj_Y1",): ("Model", "AC52"),
-            ("CapEx_Maint_Proj_Y2",): ("Model", "AD52"),
-            ("CapEx_Maint_Proj_Y3",): ("Model", "AE52"),
-            ("CapEx_Maint_Proj_Y4",): ("Model", "AF52"),
-            ("CapEx_Maint_Proj_Y5",): ("Model", "AG52"),
-            ("CapEx_Maint_Proj_Y6",): ("Model", "AH52"),
-        
-            # ---------------------
-            # Acquisitions
-            # ---------------------
-            ("Num_Acq_Proj_Y1",): ("Acquisitions", "N13"),
-            ("Num_Acq_Proj_Y2",): ("Acquisitions", "O13"),
-            ("Num_Acq_Proj_Y3",): ("Acquisitions", "P13"),
-            ("Num_Acq_Proj_Y4",): ("Acquisitions", "Q13"),
-            ("Num_Acq_Proj_Y5",): ("Acquisitions", "R13"),
-        
-            # ---------------------
-            # Header Logic
-            # ---------------------
-            ("Header_E17",): ("Model", "E17"),  # e.g., FY2016A
-            ("Header_H17",): ("Model", "H17"),  # e.g., LTM JUNE 16-25E
+         # ---------------------
+         # P&L Table (Historical)
+        # ---------------------
+        ("Revenue_Actual_1",): ("Model", "E20"),  # Oldest actual
+        ("Revenue_Actual_2",): ("Model", "F20"),
+        ("Revenue_Actual_3",): ("Model", "G20"),
+    
+        ("EBITDA_Actual_1",): ("Model", "E28"),
+        ("EBITDA_Actual_2",): ("Model", "F28"),
+        ("EBITDA_Actual_3",): ("Model", "G28"),
+    
+        # ---------------------
+        # Projections (6 years forward)
+        # ---------------------
+        ("Revenue_Proj_Y1",): ("Model", "AC20"),
+        ("Revenue_Proj_Y2",): ("Model", "AD20"),
+        ("Revenue_Proj_Y3",): ("Model", "AE20"),
+        ("Revenue_Proj_Y4",): ("Model", "AF20"),
+        ("Revenue_Proj_Y5",): ("Model", "AG20"),
+        ("Revenue_Proj_Y6",): ("Model", "AH20"),
+    
+        ("EBITDA_Proj_Y1",): ("Model", "AC28"),
+        ("EBITDA_Proj_Y2",): ("Model", "AD28"),
+        ("EBITDA_Proj_Y3",): ("Model", "AE28"),
+        ("EBITDA_Proj_Y4",): ("Model", "AF28"),
+        ("EBITDA_Proj_Y5",): ("Model", "AG28"),
+        ("EBITDA_Proj_Y6",): ("Model", "AH28"),
+    
+        # ---------------------
+        # Maintenance CapEx (Z-AA-AB...AH52)
+        # ---------------------
+        ("CapEx_Maint_Actual_1",): ("Model", "Z52"),
+        ("CapEx_Maint_Actual_2",): ("Model", "AA52"),
+        ("CapEx_Maint_Actual_3",): ("Model", "AB52"),
+        ("CapEx_Maint_Proj_Y1",): ("Model", "AC52"),
+        ("CapEx_Maint_Proj_Y2",): ("Model", "AD52"),
+        ("CapEx_Maint_Proj_Y3",): ("Model", "AE52"),
+        ("CapEx_Maint_Proj_Y4",): ("Model", "AF52"),
+        ("CapEx_Maint_Proj_Y5",): ("Model", "AG52"),
+        ("CapEx_Maint_Proj_Y6",): ("Model", "AH52"),
+    
+        # ---------------------
+        # Acquisitions
+        # ---------------------
+        ("Num_Acq_Proj_Y1",): ("Acquisitions", "N13"),
+        ("Num_Acq_Proj_Y2",): ("Acquisitions", "O13"),
+        ("Num_Acq_Proj_Y3",): ("Acquisitions", "P13"),
+        ("Num_Acq_Proj_Y4",): ("Acquisitions", "Q13"),
+        ("Num_Acq_Proj_Y5",): ("Acquisitions", "R13"),
+    
+        # ---------------------
+        # Header Logic
+        # ---------------------
+        ("Header_E17",): ("Model", "E17"),  # e.g., FY2016A
+        ("Header_H17",): ("Model", "H17"),  # e.g., LTM JUNE 16-25E
             }
 
 

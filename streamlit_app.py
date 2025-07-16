@@ -145,8 +145,10 @@ Extract the following hardcoded financials (not calculated, not inferred):
 4. **Acquisition Count** - Count of planned acquisitions per projected year
 
 ### Year Extraction Instructions:
-- From the OCR text, extract **all numeric years** associated with actual financial data.
-- Sort these years in **chronological order** and select the **three earliest years** as actuals.
+- Identify all years tied to hardcoded financial values
+- Sort chronologically and use:
+  - Three earliest years for Actuals (Actual_1, Actual_2, Actual_3)
+  - Next six years for forward-looking values (Expected, Proj_Y1 to Proj_Y5)
 
 ### Handling Year Labelss
 - The first of the three Actual years should be written in Excel cell `E17` as the year

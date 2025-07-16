@@ -68,6 +68,17 @@ def preclean_combined_text(raw_text):
     text = re.sub(r"\s{2,}", " ", text)
 
     return text
+    
+def flatten_financials(extracted):
+    flat = {}
+    for metric, values in extracted.items():
+        if isinstance(values, dict):
+            for subkey, val in values.items():
+                flat_key = f"{metric}_{subkey}"
+                flat[flat_key] = val
+        else:
+            flat[metric] = values
+    return flat
 
 def pick_metric_group(field_prefix, label):
     """
@@ -370,15 +381,16 @@ Text to analyze:
 
 
 
+        flattened_data = flatten_financials(extracted_data)
 
         template_path = "TJC Practice Simple Model New (7).xlsx"
         wb = openpyxl.load_workbook(template_path)
 
         for key, (sheet_name, cell) in mapping.items():
             metric = key[0]
-            if metric in data:
+            if metric in flattened_data:
                 try:
-                    wb[sheet_name][cell] = data[metric]
+                    wb[sheet_name][cell] = flattened_data[metric]
                 except Exception as e:
                     st.warning(f"⚠️ Failed to write {metric} → {sheet_name}!{cell}: {e}")
 

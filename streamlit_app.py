@@ -384,7 +384,7 @@ Text to analyze:
 
 
 
-        flattened_data = flatten_financials(extracted_data)
+        flattened_data = flatten_financials(data)
 
         template_path = "TJC Practice Simple Model New (7).xlsx"
         wb = openpyxl.load_workbook(template_path)

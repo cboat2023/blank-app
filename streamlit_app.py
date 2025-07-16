@@ -139,7 +139,7 @@ You are analyzing OCR output from a Confidential Information Memorandum (CIM) fo
 Extract the following hardcoded financials (not calculated, not inferred):
 
 ### Financial Metrics:
-1. **Revenue** - Three most recent actual years + Six forward-looking years
+1. **Revenue** - Three most recent actual years + Seven forward-looking years
 2. **EBITDA** (prefer Adjusted or Run-Rate Adjusted if available) - Same structure as Revenue
 3. **Maintenance CapEx** - Prefer values labeled "Maintenance CapEx" (not total CapEx)
 4. **Acquisition Count** - Count of planned acquisitions per projected year
@@ -148,7 +148,7 @@ Extract the following hardcoded financials (not calculated, not inferred):
 - Identify all years tied to hardcoded financial values
 - Sort chronologically and use:
   - Three earliest years for Actuals (Actual_1, Actual_2, Actual_3)
-  - Next six years for forward-looking values ( Proj_Y1 to Proj_Y6)
+  - Next seven years for forward-looking values ( Proj_Y1 to Proj_Y7)
 
 ### Handling Year Labelss
 - The first of the three Actual years should be written in Excel cell `E17` as the year

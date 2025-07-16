@@ -129,33 +129,51 @@ You are analyzing OCR output from a Confidential Information Memorandum (CIM) fo
 
 Your task is to extract the following **hardcoded** financials (not calculated, not inferred):
 
-### Financial Metrics:
+---
+
+### Financial Metrics to Extract:
+
 1. **Revenue**
    - Three most recent actual years (e.g., 2022A, 2023A, 2024A)
    - One expected/budget year (e.g., 2025E)
    - Five projected years (e.g., 2026E to 2030E)
 
-2. **EBITDA** (prefer Adjusted or RR Adj.)
+2. **EBITDA** (prefer Adjusted or Run-Rate Adjusted)
    - Same format: 3 recent actuals, 1 expected, 5 projected
 
 3. **Maintenance CapEx**
-   - Prefer labeled “Maintenance CapEx” (not total CapEx)
-   - Same format: 3 actual, 1 expected, 5 projected
+   - Prefer values explicitly labeled “Maintenance CapEx” (do not infer from Total CapEx)
+   - Same format: 3 actuals, 1 expected, 5 projected
 
 4. **Acquisition Count**
-   - Count of planned acquisitions per projected year
-   - If none are explicitly listed, say \"assumed\": 1 for each year
+   - Count of planned acquisitions per projected year (only if explicitly stated)
+   - If not found, assume 1 acquisition per projected year and return: "assumed"
+
+---
+
+### Special Fields for Excel Auto-Population:
+
+5. **Historical Year Header for Excel (E17):**
+   - Extract the **third most recent historical year** (e.g., 2022 if years are 2022, 2023, 2024)
+   - Return as string in this format: `"FY2022A"` under the key `"Header_E17"`
+
+6. **LTM Label (H17):**
+   - Take the **next year after the most recent actual** (e.g., 2025 if last actual is 2024)
+   - Return as string in this format: `"LTM JUNE 25-25E"` under the key `"Header_H17"`
+
+---
 
 ### Candidate Handling Instructions:
-If multiple types of a metric are found (e.g., "Adj. EBITDA" and "Reported EBITDA"), provide them inside a `*_Candidates` field. Each entry should be a dictionary with values for all 8 periods:
 
-- Actual_1, Actual_2, Actual_3
-- Expected
-- Proj_Y1 to Proj_Y5
+If multiple types of a metric are found (e.g., "Adj. EBITDA" and "Reported EBITDA"), provide them inside a `*_Candidates` field. Each entry should be a dictionary with values for all 9 periods:
+
+- `Actual_1`, `Actual_2`, `Actual_3`
+- `Expected`
+- `Proj_Y1`, ..., `Proj_Y5`
 
 For example:
 
-```json 
+```json
 "EBITDA_Candidates": {{
   "Adj. EBITDA": {{
     "Actual_1": 25.1,
@@ -170,14 +188,14 @@ For example:
   }},
   "Reported EBITDA": {{
     "Actual_1": 22.4,
-    "Actual_2": 24.1,
-    "Actual_3": 25.1,
-    "Expected": 28.5,
-    "Proj_Y1": 31.0,
-    "Proj_Y2": 33.0,
-    "Proj_Y3": 35.0,
-    "Proj_Y4": 37.0,
-    "Proj_Y5": 39.0
+    "Actual_2": 23.9,
+    "Actual_3": 24.5,
+    "Expected": 26.0,
+    "Proj_Y1": 28.0,
+    "Proj_Y2": 29.5,
+    "Proj_Y3": 31.0,
+    "Proj_Y4": 32.5,
+    "Proj_Y5": 34.0
   }}
 }}
 

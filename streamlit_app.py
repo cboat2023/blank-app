@@ -7,6 +7,7 @@ from google.cloud import vision
 from google.oauth2 import service_account
 import openai
 import openpyxl
+import pdfplumber
 
 
 class CIMExtractor:
@@ -15,7 +16,29 @@ class CIMExtractor:
     def __init__(self):
         self.setup_credentials()
         self.setup_ui()
-    
+        
+    def is_scanned_pdf(self, pdf_bytes):
+    """Determine if the PDF is scanned (image-based) or digital (text-based)."""
+    doc = fitz.open(stream=pdf_bytes, filetype="pdf")
+    for page in doc:
+        if page.get_text():  # has extractable text → digital PDF
+            return False
+    return True  # scanned image
+
+    def extract_text_from_digital_pdf(self, pdf_bytes):
+    """Extract text and tables from a digital PDF using pdfplumber."""
+    full_text = ""
+
+    with pdfplumber.open(BytesIO(pdf_bytes)) as pdf:
+        for i, page in enumerate(pdf.pages):
+            st.text(f"Extracting from page {i+1}/{len(pdf.pages)} (Digital PDF)...")
+            text = page.extract_text()
+            if text:
+                full_text += text + "\n"
+
+    return self.preclean_combined_text(full_text)
+
+
     def setup_credentials(self):
         """Initialize GCP and OpenAI credentials."""
         try:
@@ -410,9 +433,15 @@ Text to analyze:
             return
             
         # Extract text from PDF
-        with st.spinner("🧠 OCRing the CIM..."):
+        with st.spinner("🧠 Analyzing CIM..."):
             pdf_bytes = self.uploaded_pdf.read()
-            combined_text = self.extract_text_from_pdf(pdf_bytes)
+            if self.is_scanned_pdf(pdf_bytes):
+                st.info("Detected scanned PDF. Using OCR (Vision API).")
+                combined_text = self.extract_text_from_pdf(pdf_bytes)
+            else:
+                st.info("Detected digital PDF. Using direct text extraction (pdfplumber).")
+                combined_text = self.extract_text_from_digital_pdf(pdf_bytes)
+
         
         st.success("✅ OCR complete!")
         

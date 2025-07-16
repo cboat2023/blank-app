@@ -155,11 +155,11 @@ Your task is to extract the following **hardcoded** financials (not calculated, 
 
 5. **Historical Year Header for Excel (E17):**
    - Extract the **third most recent historical year** (e.g., 2022 if years are 2022, 2023, 2024)
-   - Return as string in this format: `"FY2022A"` under the key `"Header_E17"`
+   - Return  in this format: '2022', just input the year
 
 6. **LTM Label (H17):**
    - Take the **next year after the most recent actual** (e.g., 2025 if last actual is 2024)
-   - Return as string in this format: `"LTM JUNE 25-25E"` under the key `"Header_H17"`
+   - Return as string in this format: `"LTM JUNE-25E"` under the key `"Header_H17"`
 
 ---
 
@@ -329,7 +329,7 @@ Text to analyze:
     ("EBITDA_Actual_2",): ("Model", "F28"),
     ("EBITDA_Actual_3",): ("Model", "G28"),
 
-    # Management Projection Table: 2 actuals + expected + projections
+    # Management Projection Table: 1 expected + 5 projections
     ("Revenue_Expected",): ("Model", "AC20"),   # Expected year (e.g., 2025E)
     ("Revenue_Proj_Y1",): ("Model", "AD20"),
     ("Revenue_Proj_Y2",): ("Model", "AE20"),
@@ -345,7 +345,7 @@ Text to analyze:
     ("EBITDA_Proj_Y5",): ("Model", "AH28"),
 
     # Maintenance CapEx in projection table
-    ("CapEx_Maint_Actual_2",): ("Model", "AA52"),
+    ("CapEx_Maint_Actual_2",): ("Model", "AA52"),   # Skipping Actual_1 due to missing mapping
     ("CapEx_Maint_Actual_3",): ("Model", "AB52"),
     ("CapEx_Maint_Expected",): ("Model", "AC52"),
     ("CapEx_Maint_Proj_Y1",): ("Model", "AD52"),
@@ -361,6 +361,7 @@ Text to analyze:
     ("Num_Acq_Proj_Y4",): ("Acquisitions", "Q13"),
     ("Num_Acq_Proj_Y5",): ("Acquisitions", "R13"),
 }
+
 
 
 

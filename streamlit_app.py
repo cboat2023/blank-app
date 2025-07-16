@@ -145,46 +145,50 @@ Your task is to extract the following **hardcoded** financials (not calculated, 
 
 ---
 
-### Financial Metrics to Extract:
+### Financial Metrics:
 
 1. **Revenue**
-   - Three most recent actual years ( ex: FY2022A, 2022A, 2022 Actual)
-   - 6 projected/ expected years (e.g., 2025E to 2030E or FY2025E to FY2030E )
+   - Three most recent actual years (e.g., 2014A, 2015A, 2016A)
+   - Six most recent forward-looking years (e.g., 2017E, 2018F, 2019B, 2020E, 2021F, 2022E)
 
-2. **EBITDA** (prefer Adjusted or Run-Rate Adjusted)
-   - Same format: 3 recent actuals,6 expected/projected
+2. **EBITDA** (prefer Adjusted or Run-Rate Adjusted if available)
+   - Same structure as Revenue
 
 3. **Maintenance CapEx**
-   - Prefer values explicitly labeled “Maintenance CapEx” (do not infer from Total CapEx)
-   - Same format: 3 recent actuals,6 expected/projected
+   - Prefer values labeled “Maintenance CapEx” (not total CapEx)
+   - Same structure as Revenue
 
 4. **Acquisition Count**
-   - Count of planned acquisitions per projected year (only if explicitly stated)
-   - If not found, assume 1 acquisition per projected year and return: "assumed"
+   - Count of planned acquisitions per projected year
+   - If not explicitly listed, assume "1" per year
 
 ---
 
-### Special Fields for Excel Auto-Population:
+### Year Extraction Instructions:
 
-5. **Historical Year Header for Excel (E17):**
-   - Extract the **first of three most recent historical year** you will find the historicals written down as formatted ex: FY2021A,FY2022A, FY2023A choose FY2021A (e.g., 2022 if years are 2022, 2023, 2024)
-   - Return  in this format: '2022', just input the year
+- From the OCR text, identify **all years tied to hardcoded financial values**, whether labeled A (actual), B (budget), E (expected), or F (forecast).
+- Sort the years **chronologically** and:
+  - Use the **three earliest years** for Actuals (`Actual_1`, `Actual_2`, `Actual_3`)
+  - Use the **next six years** for forward-looking values (`Expected`, `Proj_Y1` to `Proj_Y5`)
+- The **third actual year** should be used to fill Excel cell `E17` in the format:  
+  **`FY{YEAR}A`**
 
-6. **LTM Label (H17):**
-   - Take the **next year after the most recent actual** (e.g., 2025 if last actual is 2024)
-   - Return as string in this format: `"LTM JUNE-25E"` under the key `"Header_H17"`
+- Also, fill Excel cell `H17` with:  
+  **`LTM JUNE {YY}-25E`**  
+  where `{YY}` is the **last two digits** of that same year.  
+  _Example: 2016 → `LTM JUNE 16-25E`_
 
 ---
 
-### Candidate Handling Instructions:
+### Candidate Metric Handling:
 
-If multiple types of a metric are found (e.g., "Adj. EBITDA" and "Reported EBITDA"), provide them inside a `*_Candidates` field. Each entry should be a dictionary with values for all 9 periods:
+If multiple versions of a metric are present (e.g., “Adj. EBITDA”, “Reported EBITDA”), group them in a `*_Candidates` object.
 
-- `Actual_1`, `Actual_2`, `Actual_3`
-- `Expected`
-- `Proj_Y1`, ..., `Proj_Y5`
+Each candidate should include values for:
+- 3 actual years (`Actual_1`, `Actual_2`, `Actual_3`)
+- 6 forward-looking years (`Expected`, `Proj_Y1`, `Proj_Y2`, `Proj_Y3`, `Proj_Y4`, `Proj_Y5`)
 
-For example:
+Example format:
 
 ```json
 "EBITDA_Candidates": {{
@@ -198,17 +202,6 @@ For example:
     "Proj_Y3": 37.5,
     "Proj_Y4": 40.0,
     "Proj_Y5": 42.0
-  }},
-  "Reported EBITDA": {{
-    "Actual_1": 22.4,
-    "Actual_2": 23.9,
-    "Actual_3": 24.5,
-    "Expected": 26.0,
-    "Proj_Y1": 28.0,
-    "Proj_Y2": 29.5,
-    "Proj_Y3": 31.0,
-    "Proj_Y4": 32.5,
-    "Proj_Y5": 34.0
   }}
 }}
 
@@ -332,18 +325,22 @@ Text to analyze:
         pick_metric_group("Num_Acq_Proj", "Acquisition Count")
 
         # Excel cell mapping
-        mapping = {
-    # P&L Table (Historical): E-G columns
-    ("Revenue_Actual_1",): ("Model", "E20"),    # Oldest actual (e.g., 2022A)
-    ("Revenue_Actual_2",): ("Model", "F20"),    # Middle actual (e.g., 2023A)
-    ("Revenue_Actual_3",): ("Model", "G20"),    # Most recent actual (e.g., 2024A)
+     mapping = {
+    # ---------------------
+    # P&L Table (Historical)
+    # ---------------------
+    ("Revenue_Actual_1",): ("Model", "E20"),  # Oldest actual
+    ("Revenue_Actual_2",): ("Model", "F20"),
+    ("Revenue_Actual_3",): ("Model", "G20"),
 
     ("EBITDA_Actual_1",): ("Model", "E28"),
     ("EBITDA_Actual_2",): ("Model", "F28"),
     ("EBITDA_Actual_3",): ("Model", "G28"),
 
-    # Management Projection Table: 1 expected + 5 projections
-    ("Revenue_Proj_Y1",): ("Model", "AC20"),   # Expected year (e.g., 2025E)
+    # ---------------------
+    # Projections (6 years forward)
+    # ---------------------
+    ("Revenue_Proj_Y1",): ("Model", "AC20"),
     ("Revenue_Proj_Y2",): ("Model", "AD20"),
     ("Revenue_Proj_Y3",): ("Model", "AE20"),
     ("Revenue_Proj_Y4",): ("Model", "AF20"),
@@ -357,8 +354,11 @@ Text to analyze:
     ("EBITDA_Proj_Y5",): ("Model", "AG28"),
     ("EBITDA_Proj_Y6",): ("Model", "AH28"),
 
-    # Maintenance CapEx in projection table
-    ("CapEx_Maint_Actual_2",): ("Model", "AA52"),   # Skipping Actual_1 due to missing mapping
+    # ---------------------
+    # Maintenance CapEx (Z-AA-AB...AH52)
+    # ---------------------
+    ("CapEx_Maint_Actual_1",): ("Model", "Z52"),
+    ("CapEx_Maint_Actual_2",): ("Model", "AA52"),
     ("CapEx_Maint_Actual_3",): ("Model", "AB52"),
     ("CapEx_Maint_Proj_Y1",): ("Model", "AC52"),
     ("CapEx_Maint_Proj_Y2",): ("Model", "AD52"),
@@ -367,19 +367,20 @@ Text to analyze:
     ("CapEx_Maint_Proj_Y5",): ("Model", "AG52"),
     ("CapEx_Maint_Proj_Y6",): ("Model", "AH52"),
 
-    # Acquisition counts (projections only)
+    # ---------------------
+    # Acquisitions
+    # ---------------------
     ("Num_Acq_Proj_Y1",): ("Acquisitions", "N13"),
     ("Num_Acq_Proj_Y2",): ("Acquisitions", "O13"),
     ("Num_Acq_Proj_Y3",): ("Acquisitions", "P13"),
     ("Num_Acq_Proj_Y4",): ("Acquisitions", "Q13"),
     ("Num_Acq_Proj_Y5",): ("Acquisitions", "R13"),
 
-
-    ("EBITDA_Actual_3",): ("Model", "G28"),   # Most recent actual EBITDA
-    ("Header_E17",): ("Model", "E17"),        # Third most recent historical year
-    ("Header_H17",): ("Model", "H17"),        # LTM header
-
-
+    # ---------------------
+    # Header Logic
+    # ---------------------
+    ("Header_E17",): ("Model", "E17"),  # e.g., FY2016A
+    ("Header_H17",): ("Model", "H17"),  # e.g., LTM JUNE 16-25E
 }
 
 

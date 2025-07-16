@@ -385,28 +385,28 @@ mapping = {
 
 
 
-        flattened_data = flatten_financials(data)
+flattened_data = flatten_financials(data)
 
-        template_path = "TJC Practice Simple Model New (7).xlsx"
-        wb = openpyxl.load_workbook(template_path)
+template_path = "TJC Practice Simple Model New (7).xlsx"
+wb = openpyxl.load_workbook(template_path)
 
-        for key, (sheet_name, cell) in mapping.items():
-            metric = key[0]
-            if metric in flattened_data:
-                try:
-                    wb[sheet_name][cell] = flattened_data[metric]
-                except Exception as e:
-                    st.warning(f"⚠️ Failed to write {metric} → {sheet_name}!{cell}: {e}")
+for key, (sheet_name, cell) in mapping.items():
+    metric = key[0]
+    if metric in flattened_data:
+        try:
+            wb[sheet_name][cell] = flattened_data[metric]
+        except Exception as e:
+            st.warning(f"⚠️ Failed to write {metric} → {sheet_name}!{cell}: {e}")
 
-        output = BytesIO()
-        wb.save(output)
-        output.seek(0)
+    output = BytesIO()
+    wb.save(output)
+    output.seek(0)
 
-        st.download_button(
-            label="📅 Download Updated LBO Excel",
-            data=output,
-            file_name="updated_lbo_model.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    st.download_button(
+        label="📅 Download Updated LBO Excel",
+        data=output,
+        file_name="updated_lbo_model.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 
 

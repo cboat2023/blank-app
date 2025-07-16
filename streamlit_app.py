@@ -154,7 +154,7 @@ Your task is to extract the following **hardcoded** financials (not calculated, 
 ### Special Fields for Excel Auto-Population:
 
 5. **Historical Year Header for Excel (E17):**
-   - Extract the **third most recent historical year** you will find the historicals written down as formatted ex: FY2021A (e.g., 2022 if years are 2022, 2023, 2024)
+   - Extract the **first of three most recent historical year** you will find the historicals written down as formatted ex: FY2021A,FY2022A, FY2023A choose FY2021A (e.g., 2022 if years are 2022, 2023, 2024)
    - Return  in this format: '2022', just input the year
 
 6. **LTM Label (H17):**

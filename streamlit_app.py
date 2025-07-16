@@ -148,7 +148,7 @@ Extract the following hardcoded financials (not calculated, not inferred):
 - Identify all years tied to hardcoded financial values
 - Sort chronologically and use:
   - Three earliest years for Actuals (Actual_1, Actual_2, Actual_3)
-  - Next six years for forward-looking values (Expected, Proj_Y1 to Proj_Y5)
+  - Next six years for forward-looking values ( Proj_Y1 to Proj_Y6)
 
 ### Handling Year Labelss
 - The first of the three Actual years should be written in Excel cell `E17` as the year

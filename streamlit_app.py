@@ -152,10 +152,10 @@ Extract the following hardcoded financials (not calculated, not inferred):
 
 ### Handling Year Labelss
 - The first of the three Actual years should be written in Excel cell `E17` as the year
-    - Example: if the three actuals are 2014, 2015, and 2016 → write 2014 in E17._
+    - Example: if the three actuals are 2014, 2015, and 2016 → write 2014 in E17.(Header_E17)
 
 - Use the same year to generate the value for Excel cell `H17`:  
-- Example: `FY2016A` → `LTM JUNE-16E` in H17.
+- Example: `FY2016A` → `LTM JUNE-16E` in H17. (Header_H17)
 
 
 ### Candidate Metric Handling:

@@ -16,6 +16,19 @@ class CIMExtractor:
     def __init__(self):
         self.setup_credentials()
         self.setup_ui()
+
+    def extract_text_from_image(self, image_bytes):
+    """Use OCR to extract text from uploaded image files."""
+    try:
+        image = vision.Image(content=image_bytes)
+        response = self.vision_client.document_text_detection(image=image)
+        if response.error.message:
+            st.warning(f"⚠️ OCR error: {response.error.message}")
+            return ""
+        return self.preclean_combined_text(response.full_text_annotation.text)
+    except Exception as e:
+        st.error(f"❌ Error processing image: {e}")
+        return ""
         
     def is_scanned_pdf(self, pdf_bytes):
         """Determine if the PDF is scanned (image-based) or digital (text-based)."""
@@ -56,8 +69,11 @@ class CIMExtractor:
     
     def setup_ui(self):
         """Setup Streamlit UI."""
-        st.title("📊 CIM Financial Extractor (OCR + AI)")
-        self.uploaded_pdf = st.file_uploader("📁 Upload CIM PDF", type=["pdf"])
+        st.title("📊 CIM Financial Extractor (PDFs + Scanned + Images)")
+
+        self.uploaded_pdf = st.file_uploader("📁 Upload CIM PDF (Digital or Scanned)", type=["pdf"])
+        self.uploaded_image = st.file_uploader("🖼️ Or upload an image of financials", type=["jpg", "jpeg", "png"])
+
     
     def join_wrapped_labels(self, text):
         """Join broken label lines like 'Adj. 4-Wall RR\nEBITDA' -> 'Adj. 4-Wall RR EBITDA'."""
@@ -428,48 +444,47 @@ Text to analyze:
             return None
 
     def run(self):
-        """Main execution flow."""
-        if not self.uploaded_pdf:
-            return
-            
-        # Extract text from PDF
-        with st.spinner("🧠 Analyzing CIM..."):
-            pdf_bytes = self.uploaded_pdf.read()
-            if self.is_scanned_pdf(pdf_bytes):
-                st.info("Detected scanned PDF. Using OCR (Vision API).")
-                combined_text = self.extract_text_from_pdf(pdf_bytes)
-            else:
-                st.info("Detected digital PDF. Using direct text extraction (pdfplumber).")
-                combined_text = self.extract_text_from_digital_pdf(pdf_bytes)
+    """Main execution flow."""
+    if not self.uploaded_pdf and not self.uploaded_image:
+        return
 
-        
-        st.success("✅ OCR complete!")
-        
-        # Show OCR output
-        st.subheader("🔍 Full OCR Text")
-        with st.expander("Click to view OCR output"):
-            st.text(combined_text)
-        
-        # Extract financials with AI
-        with st.spinner("🔍 Extracting financial metrics with GPT-4..."):
-            data = self.extract_financials_with_ai(combined_text)
-        
-        if not data:
-            return
-            
-        # Process and normalize data
-        processed_data = self.process_data(data)
-        
-        # Update Excel template
-        excel_output = self.update_excel_template(processed_data)
-        
-        if excel_output:
-            st.download_button(
-                label="📅 Download Updated LBO Excel",
-                data=excel_output,
-                file_name="updated_lbo_model.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            )
+    if self.uploaded_image:
+        st.info("📷 Processing uploaded image using OCR...")
+        image_bytes = self.uploaded_image.read()
+        combined_text = self.extract_text_from_image(image_bytes)
+
+    elif self.uploaded_pdf:
+        pdf_bytes = self.uploaded_pdf.read()
+        if self.is_scanned_pdf(pdf_bytes):
+            st.info("🧠 Scanned PDF detected. Using OCR...")
+            combined_text = self.extract_text_from_pdf(pdf_bytes)
+        else:
+            st.info("📄 Digital PDF detected. Using direct text extraction...")
+            combined_text = self.extract_text_from_digital_pdf(pdf_bytes)
+
+    # Show OCR/Extracted text
+    st.success("✅ Text extraction complete!")
+    st.subheader("🔍 Extracted Text")
+    with st.expander("Click to view full extracted text"):
+        st.text(combined_text)
+
+    # Run GPT financial extraction
+    with st.spinner("🤖 Extracting financial metrics with GPT-4..."):
+        data = self.extract_financials_with_ai(combined_text)
+
+    if not data:
+        return
+
+    processed_data = self.process_data(data)
+    excel_output = self.update_excel_template(processed_data)
+
+    if excel_output:
+        st.download_button(
+            label="📥 Download Updated LBO Excel",
+            data=excel_output,
+            file_name="updated_lbo_model.xlsx",
+            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        )
 
 
 # Initialize and run the application

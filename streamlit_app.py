@@ -444,47 +444,47 @@ Text to analyze:
             return None
 
     def run(self):
-    """Main execution flow."""
-    if not self.uploaded_pdf and not self.uploaded_image:
-        return
-
-    if self.uploaded_image:
-        st.info("📷 Processing uploaded image using OCR...")
-        image_bytes = self.uploaded_image.read()
-        combined_text = self.extract_text_from_image(image_bytes)
-
-    elif self.uploaded_pdf:
-        pdf_bytes = self.uploaded_pdf.read()
-        if self.is_scanned_pdf(pdf_bytes):
-            st.info("🧠 Scanned PDF detected. Using OCR...")
-            combined_text = self.extract_text_from_pdf(pdf_bytes)
-        else:
-            st.info("📄 Digital PDF detected. Using direct text extraction...")
-            combined_text = self.extract_text_from_digital_pdf(pdf_bytes)
-
-    # Show OCR/Extracted text
-    st.success("✅ Text extraction complete!")
-    st.subheader("🔍 Extracted Text")
-    with st.expander("Click to view full extracted text"):
-        st.text(combined_text)
-
-    # Run GPT financial extraction
-    with st.spinner("🤖 Extracting financial metrics with GPT-4..."):
-        data = self.extract_financials_with_ai(combined_text)
-
-    if not data:
-        return
-
-    processed_data = self.process_data(data)
-    excel_output = self.update_excel_template(processed_data)
-
-    if excel_output:
-        st.download_button(
-            label="📥 Download Updated LBO Excel",
-            data=excel_output,
-            file_name="updated_lbo_model.xlsx",
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        )
+        """Main execution flow."""
+        if not self.uploaded_pdf and not self.uploaded_image:
+            return
+    
+        if self.uploaded_image:
+            st.info("📷 Processing uploaded image using OCR...")
+            image_bytes = self.uploaded_image.read()
+            combined_text = self.extract_text_from_image(image_bytes)
+    
+        elif self.uploaded_pdf:
+            pdf_bytes = self.uploaded_pdf.read()
+            if self.is_scanned_pdf(pdf_bytes):
+                st.info("🧠 Scanned PDF detected. Using OCR...")
+                combined_text = self.extract_text_from_pdf(pdf_bytes)
+            else:
+                st.info("📄 Digital PDF detected. Using direct text extraction...")
+                combined_text = self.extract_text_from_digital_pdf(pdf_bytes)
+    
+        # Show OCR/Extracted text
+        st.success("✅ Text extraction complete!")
+        st.subheader("🔍 Extracted Text")
+        with st.expander("Click to view full extracted text"):
+            st.text(combined_text)
+    
+        # Run GPT financial extraction
+        with st.spinner("🤖 Extracting financial metrics with GPT-4..."):
+            data = self.extract_financials_with_ai(combined_text)
+    
+        if not data:
+            return
+    
+        processed_data = self.process_data(data)
+        excel_output = self.update_excel_template(processed_data)
+    
+        if excel_output:
+            st.download_button(
+                label="📥 Download Updated LBO Excel",
+                data=excel_output,
+                file_name="updated_lbo_model.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
 
 
 # Initialize and run the application

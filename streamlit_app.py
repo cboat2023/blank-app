@@ -18,17 +18,17 @@ class CIMExtractor:
         self.setup_ui()
 
     def extract_text_from_image(self, image_bytes):
-    """Use OCR to extract text from uploaded image files."""
-    try:
-        image = vision.Image(content=image_bytes)
-        response = self.vision_client.document_text_detection(image=image)
-        if response.error.message:
-            st.warning(f"⚠️ OCR error: {response.error.message}")
+        """Use OCR to extract text from uploaded image files."""
+        try:
+            image = vision.Image(content=image_bytes)
+            response = self.vision_client.document_text_detection(image=image)
+            if response.error.message:
+                st.warning(f"⚠️ OCR error: {response.error.message}")
+                return ""
+            return self.preclean_combined_text(response.full_text_annotation.text)
+        except Exception as e:
+            st.error(f"❌ Error processing image: {e}")
             return ""
-        return self.preclean_combined_text(response.full_text_annotation.text)
-    except Exception as e:
-        st.error(f"❌ Error processing image: {e}")
-        return ""
         
     def is_scanned_pdf(self, pdf_bytes):
         """Determine if the PDF is scanned (image-based) or digital (text-based)."""

@@ -360,6 +360,13 @@ Text to analyze:
     ("Num_Acq_Proj_Y3",): ("Acquisitions", "P13"),
     ("Num_Acq_Proj_Y4",): ("Acquisitions", "Q13"),
     ("Num_Acq_Proj_Y5",): ("Acquisitions", "R13"),
+
+
+    ("EBITDA_Actual_3",): ("Model", "G28"),   # Most recent actual EBITDA
+    ("Header_E17",): ("Model", "E17"),        # Third most recent historical year
+    ("Header_H17",): ("Model", "H17"),        # LTM header
+
+
 }
 
 

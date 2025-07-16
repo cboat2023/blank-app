@@ -23,7 +23,7 @@ class CIMExtractor:
         for page in doc:
             if page.get_text():  # has extractable text → digital PDF
                 return False
-    return True  # scanned image
+        return True  # scanned image
 
     def extract_text_from_digital_pdf(self, pdf_bytes):
         """Extract text and tables from a digital PDF using pdfplumber."""
@@ -36,7 +36,7 @@ class CIMExtractor:
                 if text:
                     full_text += text + "\n"
 
-    return self.preclean_combined_text(full_text)
+        return self.preclean_combined_text(full_text)
 
 
     def setup_credentials(self):

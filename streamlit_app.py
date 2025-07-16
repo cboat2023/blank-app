@@ -159,7 +159,7 @@ Extract the following hardcoded financials (not calculated, not inferred):
 ### Candidate Metric Handling:
 If multiple versions of a metric exist, group them in *_Candidates objects.
 
-Example format:
+Example format:(DO not change for example Actual_1 to Actual_2016, use example format)
 ```json
 {{
   "EBITDA_Candidates": {{

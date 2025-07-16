@@ -134,16 +134,15 @@ Your task is to extract the following **hardcoded** financials (not calculated, 
 ### Financial Metrics to Extract:
 
 1. **Revenue**
-   - Three most recent actual years (e.g., 2022A, 2023A, 2024A)
-   - One expected/budget year (e.g., 2025E)
-   - Five projected years (e.g., 2026E to 2030E)
+   - Three most recent actual years ( ex: FY2022A, 2022A, 2022 Actual)
+   - 6 projected/ expected years (e.g., 2025E to 2030E or FY2025E to FY2030E )
 
 2. **EBITDA** (prefer Adjusted or Run-Rate Adjusted)
-   - Same format: 3 recent actuals, 1 expected, 5 projected
+   - Same format: 3 recent actuals,6 expected/projected
 
 3. **Maintenance CapEx**
    - Prefer values explicitly labeled “Maintenance CapEx” (do not infer from Total CapEx)
-   - Same format: 3 actuals, 1 expected, 5 projected
+   - Same format: 3 recent actuals,6 expected/projected
 
 4. **Acquisition Count**
    - Count of planned acquisitions per projected year (only if explicitly stated)

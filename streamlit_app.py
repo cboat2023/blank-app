@@ -69,16 +69,19 @@ def preclean_combined_text(raw_text):
 
     return text
     
-def flatten_financials(extracted):
-    flat = {}
-    for metric, values in extracted.items():
+def flatten_financials(data):
+    """Flatten nested metric dictionaries (like EBITDA, Revenue) into one level."""
+    flattened = {}
+
+    for metric, values in data.items():
         if isinstance(values, dict):
-            for subkey, val in values.items():
-                flat_key = f"{metric}_{subkey}"
-                flat[flat_key] = val
+            for subkey, value in values.items():
+                flattened[f"{metric}_{subkey}"] = value
         else:
-            flat[metric] = values
-    return flat
+            flattened[metric] = values  # Handle flat keys like Fiscal_Years if needed
+
+    return flattened
+
 
 def pick_metric_group(field_prefix, label):
     """
